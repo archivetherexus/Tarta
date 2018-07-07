@@ -1,0 +1,9 @@
+.theme-dark {
+    --primary-background-color: black;
+    --primary-text-color: white;
+}
+
+.theme-light {
+    --primary-background-color: white;
+    --primary-text-color: black;
+}

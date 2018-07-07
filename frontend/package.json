@@ -1,0 +1,39 @@
+{
+  "name": "tarta-frontend",
+  "version": "1.0.0",
+  "description": "School management software",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node -r ts-node/register --inspect fuse.ts dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tyrerexus/Tarta.git"
+  },
+  "keywords": [
+    "cms",
+    "forum",
+    "school",
+    "management",
+    "frontend"
+  ],
+  "author": "Alexander B",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/tyrerexus/Tarta/issues"
+  },
+  "homepage": "https://github.com/tyrerexus/Tarta#readme",
+  "devDependencies": {
+    "@types/node": "^10.5.2",
+    "fuse-box": "^3.3.0",
+    "postcss-import": "^11.1.0",
+    "ts-node": "^7.0.0",
+    "ts-transform-classcat": "^0.1.0",
+    "ts-transform-inferno": "^2.2.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "inferno": "^5.3.0"
+  }
+}

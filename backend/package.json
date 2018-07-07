@@ -1,0 +1,35 @@
+{
+  "name": "tarta-backend",
+  "version": "1.0.0",
+  "description": "School management software",
+  "main": "index.js",
+  "scripts": {
+    "serve": "yarn tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tyrerexus/Tarta.git"
+  },
+  "keywords": [
+    "cms",
+    "forum",
+    "school",
+    "management",
+    "backend"
+  ],
+  "author": "Alexander B",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/tyrerexus/Tarta/issues"
+  },
+  "homepage": "https://github.com/tyrerexus/Tarta#readme",
+  "devDependencies": {
+    "@types/node": "^10.5.1",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "polka": "^0.4.0"
+  }
+}
