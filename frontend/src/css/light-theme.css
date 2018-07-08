@@ -1,0 +1,6 @@
+@import './app';
+
+:root {
+    --primary-background-color: white;
+    --primary-text-color: black;
+}  

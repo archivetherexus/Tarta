@@ -20,13 +20,19 @@ let isProduction = false;
 
 Sparky.task('config', () => {
 
-    var productionPlugins = isProduction ? [
+    const productionPlugins = isProduction ? [
         QuantumPlugin({
             bakeApiIntoBundle: 'app',
             treeshake: true,
             uglify: true,
         }),
     ] : [];
+
+    const postCSSPlugins = [
+        require('postcss-import'),
+        require('postcss-css-variables'),
+        require('postcss-preset-env'),
+    ];
 
     fuse = new FuseBox({
         homeDir: 'src',
@@ -39,9 +45,9 @@ Sparky.task('config', () => {
         },
         plugins: [
             EnvPlugin({ NODE_ENV: isProduction ? 'production' : 'development' }),
-            [PostCSSPlugin([require("postcss-import")]),, CSSResourcePlugin(), CSSPlugin()],
+            [PostCSSPlugin(postCSSPlugins), CSSResourcePlugin(), CSSPlugin()],
             WebIndexPlugin({
-                title: 'Inferno Typescript FuseBox Example',
+                title: 'Tarta Development',
                 template: 'src/index.html',
             }),
             ...productionPlugins,
