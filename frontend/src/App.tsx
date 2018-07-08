@@ -1,27 +1,30 @@
 import { render, Component } from 'inferno';
 import { Provider } from 'inferno-redux';
+import { BrowserRouter, Route } from 'inferno-router';
 
-// Load all the themes. //
+// Load all the themes, fonts and icon packs. //
 import './css/dark-theme.css';
 import './css/light-theme.css';
+import 'material-icons/css/material-icons.css';
+import 'material-icons/iconfont/material-icons.css';
+import 'opensans-npm-webfont';
 
-import ThemeSelector from './components/ThemeSelector';
 import { store } from './Store';
-
-class App extends Component<any, any> {
-    render(): any {
-        return (
-            <div>
-                {'Welcome to this app!'}
-                <ThemeSelector/>
-            </div>
-        );
-    }
-}
+import LandingPage from './components/pages/LandingPage';
+import Navbar from './components/Navbar';
+import SettingsPage from './components/pages/SettingsPage';
+import FeedPage from './components/pages/FeedPage';
 
 render(
     <Provider store={store}>
-        <App/>
+        <BrowserRouter>
+            <div>
+            <Navbar/>
+                <Route path="/feed" component={FeedPage}/>
+                <Route path="/settings" component={SettingsPage}/>
+                <Route exact path="/" component={LandingPage}/>
+            </div>
+        </BrowserRouter>
     </Provider>,
     document.getElementById("app-root")
 );

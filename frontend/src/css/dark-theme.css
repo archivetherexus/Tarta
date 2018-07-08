@@ -1,6 +1,17 @@
 @import './app';
 
 :root {
-    --primary-background-color: black;
+    --site-background-color: #282828;
+    --primary-background-color: #3500D3;
+    --secondary-background-color: #240090;
+    --tertiary-background-color: #190061;
     --primary-text-color: white;
 } 
+
+color-scheme {
+   color: #0C0032;
+   color: #190061;
+   color: #240090;
+   color: #3500D3;
+   color: #282828; 
+}

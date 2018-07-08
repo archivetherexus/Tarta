@@ -1,5 +1,6 @@
 import { render, Component } from 'inferno';
 import { connect } from 'inferno-redux';
+import { Link } from 'inferno-router';
 
 class ThemeSelector extends Component<any, any> {
     handleSwitchTheme: () => void;
@@ -22,8 +23,7 @@ class ThemeSelector extends Component<any, any> {
         const { theme } = this.props;
         return (
             <div>
-                {'Current theme: ' + theme}
-                <br/>
+                {'Current theme: ' + theme + ' '}
                 <button onClick={this.handleSwitchTheme}>Press to switch!</button>
             </div>
         );

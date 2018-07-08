@@ -45,7 +45,9 @@ Sparky.task('config', () => {
         },
         plugins: [
             EnvPlugin({ NODE_ENV: isProduction ? 'production' : 'development' }),
-            [PostCSSPlugin(postCSSPlugins), CSSResourcePlugin(), CSSPlugin()],
+            [PostCSSPlugin(postCSSPlugins), CSSResourcePlugin({
+                dist: '.fusebox/dist/css-resources',
+            }), CSSPlugin()],
             WebIndexPlugin({
                 title: 'Tarta Development',
                 template: 'src/index.html',
@@ -56,9 +58,9 @@ Sparky.task('config', () => {
     app = fuse.bundle('app').instructions('>App.tsx');
 });
 
-Sparky.task('clean', () => Sparky.src('dist/').clean('dist/'));
+Sparky.task('clean', () => Sparky.src('.fusebox/').clean('.fusebox/'));
 
-Sparky.task('env', () => (isProduction = true));
+Sparky.task('production-env', () => (isProduction = true));
 
 Sparky.task('dev', ['clean', 'config'], () => {
     fuse.dev();
@@ -66,6 +68,6 @@ Sparky.task('dev', ['clean', 'config'], () => {
     return fuse.run();
 });
 
-Sparky.task('prod', ['clean', 'env', 'config'], () => {
+Sparky.task('prod', ['clean', 'production-env', 'config'], () => {
     return fuse.run();
 });

@@ -1,0 +1,63 @@
+.navbar {
+    background-color: var(--secondary-background-color);
+    position: relative;
+    height: 57px;
+}
+
+.navbar-logo {
+    position: absolute;
+    top: 13px;
+    left: 10px;
+    width: 0px;
+}
+
+.navbar-container {
+    padding-left: 40px;
+    background-color: var(--secondary-background-color);
+    overflow: hidden;
+}
+
+.navbar-container a {
+    float: left;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: var(--primary-text-color);
+}
+
+.navbar-container a:hover {
+    background-color: var(--tertiary-background-color);
+}
+
+.active {
+    text-decoration: underline;
+}
+
+.navbar-container .icon {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .navbar-container a:not(:first-child) {
+        display: none;
+    }
+    .navbar-container a.icon {
+        float: right;
+        display: block;
+    }
+    .navbar.responsive .navbar-container {
+        position: relative;
+    }
+    .navbar.responsive .navbar-container .icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .navbar.responsive .navbar-container a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+}

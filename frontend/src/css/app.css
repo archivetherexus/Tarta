@@ -1,4 +1,11 @@
-div {
-    background-color: var(--primary-background-color);
+@import './misc/navbar';
+@import './misc/panel';
+
+@import './pages/landing_page';
+
+body {
+    margin: 0px;
+    background-color: var(--site-background-color);
     color: var(--primary-text-color);
+    font-family: 'Open Sans', sans-serif;
 }
