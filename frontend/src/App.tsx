@@ -14,12 +14,14 @@ import LandingPage from './components/pages/LandingPage';
 import Navbar from './components/Navbar';
 import SettingsPage from './components/pages/SettingsPage';
 import FeedPage from './components/pages/FeedPage';
+import LoginPage from './components/pages/LoginPage';
 
 render(
     <Provider store={store}>
         <BrowserRouter>
             <div>
             <Navbar/>
+                <Route path="/login" component={LoginPage}/>
                 <Route path="/feed" component={FeedPage}/>
                 <Route path="/settings" component={SettingsPage}/>
                 <Route exact path="/" component={LandingPage}/>

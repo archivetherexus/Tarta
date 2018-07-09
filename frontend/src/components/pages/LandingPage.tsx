@@ -6,7 +6,12 @@ class LandingPage extends Component<any, any> {
     render() {
         return (
             <div className="panel">
+                <Link to="/login">Please login first</Link>
+                <br />
+                <br />
                 {'Welcome to this landing page!'}
+                <br />
+                <Link to="/feed">{'Feed'}</Link>
                 <br />
             </div>
         );

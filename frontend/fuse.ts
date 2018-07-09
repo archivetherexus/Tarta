@@ -8,6 +8,7 @@ import {
     QuantumPlugin,
     PostCSSPlugin,
     Bundle,
+    JSONPlugin,
 } from 'fuse-box';
 
 import transformInferno from 'ts-transform-inferno';
@@ -52,6 +53,7 @@ Sparky.task('config', () => {
                 title: 'Tarta Development',
                 template: 'src/index.html',
             }),
+            JSONPlugin(),
             ...productionPlugins,
         ],
     });
