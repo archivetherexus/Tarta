@@ -5,7 +5,7 @@ import { Link } from 'inferno-router';
 class LandingPage extends Component<any, any> {
     render() {
         return (
-            <div className="panel">
+            <div className="landing-page panel">
                 <Link to="/login">Please login first</Link>
                 <br />
                 <br />

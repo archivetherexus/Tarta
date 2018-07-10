@@ -16,7 +16,7 @@ class SettingsPage extends Component<any, any> {
     render() {
         const { i18n, theme } = this.props;
         return (
-            <div className="panel">
+            <div className="settings-page panel">
                 <h2>{i18n('Settings')}</h2>
 
                 {'Toggle theme: '}

@@ -65,7 +65,9 @@ Sparky.task('clean', () => Sparky.src('.fusebox/').clean('.fusebox/'));
 Sparky.task('production-env', () => (isProduction = true));
 
 Sparky.task('dev', ['clean', 'config'], () => {
-    fuse.dev();
+    fuse.dev({
+        fallback: '/'
+    });
     app.hmr().watch();
     return fuse.run();
 });

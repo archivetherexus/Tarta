@@ -4,7 +4,7 @@ import { connect } from 'inferno-redux';
 class FeedPage extends Component<any, any> {
     render() {
         return (
-            <div className="panel">
+            <div className="feed-page panel">
                 {'Not implemented yet.'}
             </div>
         )

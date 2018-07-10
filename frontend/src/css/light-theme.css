@@ -1,11 +1,29 @@
 @import './app';
 
+/* 
+ * The primary color of the light theme is lightblue.
+ * 
+ *
+ */
+
 :root {
-    --primary-text-color: black;
-    --primary-background-color: #63CDD7;
-    --secondary-background-color: #0093B7;
-    --tertiary-background-color: #005F89;
-    --site-background-color: #A0C5CF;
+    /* Panels. */
+    --panel-background: #63CDD7;
+    --panel-shaded-background: #0093B7;
+    --panel-shaded-shaded-background: 	#007593;
+
+    /* Buttons. */
+    --button-color: #FF8060;
+    --button-shaded-color: #CB664C;
+
+    /* Alternative buttons. */
+    --button-alt-color: #FF99FF;
+    --button-alt-shaded-color: #CB7BCB;
+
+    /* Misc. */
+    --site-background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); /*#A0C5CF;*/
+    --site-shaded-background: #0093B7;
+    --site-text-color: #000000;
 }  
 
 color-scheme {

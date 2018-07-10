@@ -1,11 +1,23 @@
 @import './app';
 
 :root {
-    --site-background-color: #282828;
-    --primary-background-color: #3500D3;
-    --secondary-background-color: #240090;
-    --tertiary-background-color: #190061;
-    --primary-text-color: white;
+    /* Panels. */
+    --panel-background: #3500D3;
+    --panel-shaded-background: #240090;
+    --paenl-shaded-shaded-background: #190061;
+
+    /* Buttons. */
+    --button-color: #FF8060;
+    --buton-shaded-color: #CB664C;
+
+    /* Alternative buttons. */
+    --button-alt-color: #FF99FF;
+    --button-alt-shaded-color: #CB7BCB;
+
+    /* Misc */
+    --site-background: #282828;
+    --site-shaded-background: #252525;
+    --site-text-color: #FFFFFF;
 } 
 
 color-scheme {

@@ -3,7 +3,7 @@ import { connect } from 'inferno-redux';
 
 class InformationPage extends Component<any, any> {
     render() {
-        return (<div/>)
+        return (<div className="information-page"/>)
     }
 }
 

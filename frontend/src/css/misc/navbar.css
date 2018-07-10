@@ -1,5 +1,5 @@
 .navbar {
-    background-color: var(--secondary-background-color);
+    background-color: var(--panel-shaded-background);
     position: relative;
     height: 57px;
 }
@@ -13,8 +13,9 @@
 
 .navbar .navbar-container {
     padding-left: 40px;
-    background-color: var(--secondary-background-color);
+    background-color: var(--panel-shaded-background);
     overflow: hidden;
+    height: 100%;
 }
 
 .navbar .navbar-container a {
@@ -24,11 +25,12 @@
     padding: 14px 16px;
     text-decoration: none;
     font-size: 17px;
-    color: var(--primary-text-color);
+    color: var(--site-text-color);
+    height: 100%;
 }
 
 .navbar .navbar-container a:hover {
-    background-color: var(--tertiary-background-color);
+    background-color: var(--panel-shaded-shaded-background);
 }
 
 .navbar .navbar-container .icon {
@@ -45,11 +47,13 @@
     }
     .navbar.responsive .navbar-container {
         position: relative;
+        height: initial;
     }
     .navbar.responsive .navbar-container .icon {
         position: absolute;
         right: 0;
         top: 0;
+        height: 24px;
     }
     .navbar.responsive .navbar-container a {
         float: none;
@@ -63,5 +67,5 @@
 }
 
 .navbar .navbar-logo .navbar-logo-icon {
-    color: var(--primary-text-color);
+    color: var(--site-text-color);
 }
