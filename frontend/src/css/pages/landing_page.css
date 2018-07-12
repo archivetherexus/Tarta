@@ -1,0 +1,21 @@
+.landing-page .main-title {
+    position: absolute;
+    text-align: center;
+    font-size: 35px;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    bottom: 60%;
+}
+
+.landing-page .login-button {
+    font-size: 30px;
+}
+
+.landing-page .find-out-more-button {
+    font-size: 30px;
+}
+
+.landing-page .equal-button-width {
+    width: 206px;
+}
