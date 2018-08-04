@@ -4,7 +4,7 @@
   "description": "School management software",
   "main": "index.js",
   "scripts": {
-    "serve": "yarn tsc && node dist/index.js",
+    "serve": "node -r ts-node/register fuse.ts dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,8 +26,10 @@
   "homepage": "https://github.com/tyrerexus/Tarta#readme",
   "devDependencies": {
     "@types/node": "^10.5.1",
+    "fuse-box": "^3.4.0",
     "tslint": "^5.10.0",
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "ts-node": "^7.0.0"
   },
   "dependencies": {
     "polka": "^0.4.0"

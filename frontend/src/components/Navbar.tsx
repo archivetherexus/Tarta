@@ -4,11 +4,11 @@ import { NavLink, Link, withRouter } from 'inferno-router';
 
 class Navbar extends Component<any, any> {
 
-    navbar: HTMLElement | null = null;
+    navbarRef: HTMLElement | null = null;
     
     onToggleNavbar() {
-        if (this.navbar !== null) {
-            this.navbar.classList.toggle("responsive")
+        if (this.navbarRef !== null) {
+            this.navbarRef.classList.toggle("responsive")
         }
     }
 
@@ -20,8 +20,8 @@ class Navbar extends Component<any, any> {
 
     render() {
         const { i18n, location } = this.props;
-        return this.shouldRender(location.pathname) ? (
-            <div className="navbar" ref={(n) => this.navbar = n}>   
+        return this.shouldRender(location.pathname) && (
+            <div className="navbar" ref={(n) => this.navbarRef = n}>   
                 <div className="navbar-container">
                     <NavLink activeClassName="active" exact to="/feed">{'Feed'}</NavLink>
                     <NavLink activeClassName="active" exact to="/settings">{i18n('Settings')}</NavLink>
@@ -34,8 +34,6 @@ class Navbar extends Component<any, any> {
                     <Link to="/"><i className="mi mi-school navbar-logo-icon" /></Link>
                 </div>
             </div>
-      ) : (
-          <span />
       );
     }
 }

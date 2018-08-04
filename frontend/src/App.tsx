@@ -20,7 +20,7 @@ render(
     <Provider store={store}>
         <BrowserRouter>
             <div>
-            <Navbar/>
+                <Navbar/>
                 <Route path="/login" component={LoginPage}/>
                 <Route path="/feed" component={FeedPage}/>
                 <Route path="/settings" component={SettingsPage}/>
