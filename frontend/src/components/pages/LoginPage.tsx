@@ -1,5 +1,7 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
+//import msgpack from 'msgpack-lite';
+import { fetchHTTP } from '../../helpers/fetch_http';
 
 class LoginPage extends Component<any, any> {
     
@@ -32,11 +34,10 @@ class LoginPage extends Component<any, any> {
                 state: 1
             });
 
-            fetch('http://localhost:3000/list', {mode: 'cors'}).then(response => {
-                response.json().then(j => {
-                    console.log(j);
-                });
-            });
+            fetchHTTP('http://localhost:3000/list').then(r => console.log(r));
+            fetchHTTP('http://localhost:3000/list2')
+            .then(r => console.log(r))
+            .catch(e => console.error(e));
         }
     }
         

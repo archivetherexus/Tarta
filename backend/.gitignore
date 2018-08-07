@@ -1,0 +1,9 @@
+# IDEA
+target
+tarta.iml
+tarta.ipr
+tarta.iws
+.idea
+.classpath
+.project
+.settings
