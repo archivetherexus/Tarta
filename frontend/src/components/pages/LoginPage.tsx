@@ -26,18 +26,26 @@ class LoginPage extends Component<any, any> {
     }
     
     onLoginSubmit() {
-        if (this.passwordRef != null
+        if (this.passwordRef !== null
             && this.passwordRef.value.length > 0
-            && this.usernameRef != null
+            && this.usernameRef !== null
             && this.usernameRef.value.length > 0) {
+            
+            var username = this.usernameRef.value;
+            var password = this.passwordRef.value;
+
             this.setState({
                 state: 1
             });
 
-            fetchHTTP('http://localhost:3000/list').then(r => console.log(r));
+
+            fetchHTTP('http://localhost:3000/user/login', {
+                username, 
+                password
+            }, {post: true, form: true}).then(r => console.log(r));
             fetchHTTP('http://localhost:3000/list2')
-            .then(r => console.log(r))
-            .catch(e => console.error(e));
+                .then(r => console.log(r))
+                .catch(e => console.error(e));
         }
     }
         

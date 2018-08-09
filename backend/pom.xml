@@ -42,7 +42,7 @@
             <artifactId>undertow-core</artifactId>
             <version>${undertow.version}</version>
         </dependency>
-        <dependency>
+        <dependency> <!-- Servlets are not used and can be removed...-->
             <groupId>io.undertow</groupId>
             <artifactId>undertow-servlet</artifactId>
             <version>${undertow.version}</version>
@@ -51,6 +51,11 @@
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
             <version>${undertow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>3.6.4</version>
         </dependency>
 
 
