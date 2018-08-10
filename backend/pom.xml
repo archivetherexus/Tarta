@@ -42,11 +42,6 @@
             <artifactId>undertow-core</artifactId>
             <version>${undertow.version}</version>
         </dependency>
-        <dependency> <!-- Servlets are not used and can be removed...-->
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet</artifactId>
-            <version>${undertow.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>

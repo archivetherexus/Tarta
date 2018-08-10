@@ -42,7 +42,17 @@ class LoginPage extends Component<any, any> {
             fetchHTTP('http://localhost:3000/user/login', {
                 username, 
                 password
-            }, {post: true, form: true}).then(r => console.log(r));
+            }, {post: true, form: true}).then(r => {
+                if (r.status == 'OK') {
+                    this.context.store.dispatch({
+                        type: 'SET_SESSION_ID',
+                        newSessionID: r.session_id,
+                    });
+                    this.context.router.history.push('/');
+                } else {
+                    alert(r.error);
+                }
+            });
             fetchHTTP('http://localhost:3000/list2')
                 .then(r => console.log(r))
                 .catch(e => console.error(e));
