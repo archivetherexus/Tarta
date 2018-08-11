@@ -2,10 +2,12 @@ package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormDataParser;
+import se.fikaware.tarta.models.Session;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class UserPage {
     public static void Login(HttpServerExchange exchange) throws IOException {
@@ -21,8 +23,13 @@ public class UserPage {
         }
 
         if (username.equals(password)) {
-            Response.json(exchange, new ....);
+            var response = new HashMap<String, String>();
+            response.put("status", "OK");
+            response.put("session_id", Session.startSession().sessionID);
+            Response.json(exchange, response);
         } else {
+            var response = new HashMap<String, String>();
+            response.put("status", "OK");
             Response.json(exchange, "Failure");
         }
     }

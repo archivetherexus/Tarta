@@ -5,6 +5,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
+import se.fikaware.misc.TinyMap;
 import se.fikaware.tarta.pages.FeedPage;
 import se.fikaware.tarta.pages.UserPage;
 import se.fikaware.web.Response;
@@ -15,6 +16,10 @@ import java.util.List;
 
 public class App {
     public static void main(final String[] args) {
+        var a = new TinyMap<String, String>();
+        a.put("Test", "World");
+        System.out.println(a.get("Test"));
+
         Server.start(getRoutes(), new MongoClient().getDatabase("tarta-dev"));
     }
 
