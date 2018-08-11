@@ -18,16 +18,32 @@ public class App {
     public static void main(final String[] args) {
         var a = new TinyMap<String, String>();
         a.put("Test", "World");
+        a.put("Hey", "Now");
         System.out.println(a.get("Test"));
 
-        Server.start(getRoutes(), new MongoClient().getDatabase("tarta-dev"));
+        var iterator = a.entrySet().iterator();
+        //noinspection WhileLoopReplaceableByForEach
+        while(iterator.hasNext()) {
+            var entry = iterator.next();
+            System.out.println(entry.getKey() + ":- " + entry.getValue());
+        }
+
+        for (String entry : a.keySet()) {
+            System.out.println("Key: " + entry);
+        }
+
+        for (String entry : a.values()) {
+            System.out.println("Values: " + entry);
+        }
+
+        Server.start(() -> getRoutes(), () -> new MongoClient().getDatabase("tarta-dev"));
     }
 
-    public static HttpHandler getRoutes() {
+    private static HttpHandler getRoutes() {
         return new RoutingHandler()
                 .get("/test", req -> {
                     req.getQueryParameters().get("hello");
-                    List list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     list.add("Hello");
                     list.add("World");
                     list.add("Ok.");

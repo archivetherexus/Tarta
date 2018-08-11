@@ -59,6 +59,11 @@ public class TinyMap<K, V> implements Map<K, V> {
         return null;
     }
 
+    public TinyMap<K, V> add(K key, V value) {
+        put(key, value);
+        return this;
+    }
+
     @Override
     public int size() {
         return entries;

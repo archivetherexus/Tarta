@@ -48,9 +48,10 @@ class LoginPage extends Component<any, any> {
                         type: 'SET_SESSION_ID',
                         newSessionID: r.session_id,
                     });
+                    console.log("New session ID: " + r.session_id);
                     this.context.router.history.push('/');
                 } else {
-                    alert(r.error);
+                    alert(r.reason);
                 }
             });
             fetchHTTP('http://localhost:3000/list2')

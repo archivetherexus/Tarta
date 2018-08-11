@@ -4,15 +4,38 @@ import com.mongodb.client.MongoDatabase;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.util.HttpString;
+
 import se.fikaware.tarta.models.User;
+
+import java.util.function.Supplier;
+import java.util.logging.*;
+
 
 public class Server {
 
     private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
 
-    public static void start(HttpHandler routes, MongoDatabase database) {
-        setupDatabase(database);
-        setupWebServer(routes);
+    public static void start(Supplier<HttpHandler> routesCreator, Supplier<MongoDatabase> databaseCreator) {
+        setupLogger();
+        setupDatabase(databaseCreator.get());
+        setupWebServer(routesCreator.get());
+    }
+
+    private static void setupLogger() {
+        var formatter = new Formatter() {
+
+            @Override
+            public String format(LogRecord record) {
+                return "[" + record.getLoggerName() + "] " + record.getMessage() + "\n";
+            }
+        };
+
+        Logger logger = Logger.getLogger("");
+        logger.setLevel(Level.ALL);
+        Handler[] handlers = logger.getHandlers();
+        for(Handler handler : handlers) {
+            handler.setFormatter(formatter);
+        }
     }
 
     private static void setupWebServer(HttpHandler routes) {
