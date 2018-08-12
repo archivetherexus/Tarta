@@ -125,7 +125,9 @@ public class TinyMap<K, V> implements Map<K, V> {
             var entry = first;
             while(entry.next != null) {
                 if (key == null ? entry.next.key == null : key.equals(entry.next.key)) {
+                    var value = entry.next.value;
                     entry.next = entry.next.next;
+                    return value;
                 }
                 entry = entry.next;
             }
