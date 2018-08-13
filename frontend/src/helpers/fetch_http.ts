@@ -37,7 +37,9 @@ export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: 
             if (request.status === 404) {
                 reject('Status code was 404')
             } else if (request.response) {
-                resolve(msgpack.decode(new Uint8Array(request.response)));
+                let data = msgpack.decode(new Uint8Array(request.response));
+                //console.log(data);
+                resolve(data);
             } else {
                 reject('No response in request object!');
             }
@@ -50,6 +52,8 @@ export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: 
         });
         if (options != null && (options.post || options.form)) {
             request.open('POST', url);
+        } else if (toSend == null) {
+            request.open('GET', url);
         } else {
             request.open('GET', url + '?' + toSend);
         }

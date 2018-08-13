@@ -11,8 +11,6 @@ import se.fikaware.tarta.models.User;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 
-import java.io.IOException;
-
 public class UserPage {
     public static void Login(HttpServerExchange exchange) {
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
@@ -29,9 +27,9 @@ public class UserPage {
             return;
         }
 
-        var user = new User(username);
-        if (user.exists()) {
-            user.load();
+
+        if (User.exists(username)) {
+            var user = User.load(username);
 
             // TODO: The password should be one-way hashed...
             if (password.equals(user.password)) {

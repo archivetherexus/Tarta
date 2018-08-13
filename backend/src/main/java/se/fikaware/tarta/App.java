@@ -6,38 +6,17 @@ import io.undertow.server.RoutingHandler;
 
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import se.fikaware.misc.TinyMap;
-import se.fikaware.tarta.pages.FeedPage;
+import se.fikaware.tarta.pages.PostsPage;
 import se.fikaware.tarta.pages.UserPage;
 import se.fikaware.web.Handlers;
 import se.fikaware.web.Response;
 import se.fikaware.web.Server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class App {
     public static void main(final String[] args) {
-        var a = new TinyMap<String, String>();
-        a.put("Test", "World");
-        a.put("Hey", "Now");
-        System.out.println(a.get("Test"));
-
-        var iterator = a.entrySet().iterator();
-        //noinspection WhileLoopReplaceableByForEach
-        while(iterator.hasNext()) {
-            var entry = iterator.next();
-            System.out.println(entry.getKey() + ":- " + entry.getValue());
-        }
-
-        for (String entry : a.keySet()) {
-            System.out.println("Key: " + entry);
-        }
-
-        for (String entry : a.values()) {
-            System.out.println("Values: " + entry);
-        }
-
         Server.start(() -> getRoutes(), () -> new MongoClient().getDatabase("tarta-dev"));
     }
 
@@ -56,7 +35,7 @@ public class App {
                 .get("/user/settings/get", UserPage::SettingsGet)
                 .get("/user/settings/set", UserPage::SettingsSet)
                 .get("/user/name", Handlers.withUser(UserPage::Name))
-                .get("/feed/get", FeedPage::Get)
-                .post("/feed/post", FeedPage::Post);
+                .get("/posts/feed/get", PostsPage::FeedGet)
+                .post("/posts/create", PostsPage::Create);
     }
 }

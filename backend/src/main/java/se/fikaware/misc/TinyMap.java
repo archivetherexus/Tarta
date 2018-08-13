@@ -37,6 +37,7 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     private int entries = 0;
+
     private TinyMapEntry first = null;
 
     private TinyMapEntry findEntry(Object key) {

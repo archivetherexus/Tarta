@@ -10,6 +10,7 @@ public class Session {
     private static Map<String, Session> sessions = new HashMap<>();
 
     public String sessionID;
+
     public User user = null;
 
     Session(String sessionID) {
