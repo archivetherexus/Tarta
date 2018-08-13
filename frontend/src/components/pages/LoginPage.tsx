@@ -50,6 +50,15 @@ class LoginPage extends Component<any, any> {
                     });
                     console.log("New session ID: " + r.session_id);
                     this.context.router.history.push('/');
+
+
+                    fetchHTTP('http://localhost:3000/user/name', {
+                        session_id: r.session_id,
+                    }).then(username => {
+                        console.log('Username: ' + username);
+                    });
+
+
                 } else {
                     alert(r.reason);
                 }

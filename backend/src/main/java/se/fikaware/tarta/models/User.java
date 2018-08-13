@@ -6,10 +6,10 @@ import org.bson.Document;
 public class User {
     static public MongoCollection<Document> userCollection = null;
 
-    String username;
-    String password;
+    public String username;
+    public String password;
 
-    User(String username) {
+    public User(String username) {
         this.username = username;
     }
 
@@ -19,16 +19,21 @@ public class User {
                 .append("password", password);
     }
 
-    void insert() {
+    public boolean exists() {
+        var user = userCollection.find(new Document().append("username", username));
+        return user.iterator().hasNext();
+    }
+
+    public void insert() {
         userCollection.insertOne(toDocument());
 
     }
 
-    void update() {
+    public void update() {
         userCollection.findOneAndUpdate(new Document().append("username", username), toDocument());
     }
 
-    void load() {
+    public void load() {
         var data = userCollection.find(new Document().append("username", username)).first();
         password = data.getString("password");
     }

@@ -7,13 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import se.fikaware.misc.TinyMap;
 import se.fikaware.tarta.models.Session;
+import se.fikaware.tarta.models.User;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 
 import java.io.IOException;
 
 public class UserPage {
-    public static void Login(HttpServerExchange exchange) throws IOException {
+    public static void Login(HttpServerExchange exchange) {
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
 
         var logger = LoggerFactory.getLogger(UserPage.class);
@@ -28,15 +29,28 @@ public class UserPage {
             return;
         }
 
-        if (username.equals(password)) {
-            Response.json(exchange, new TinyMap<String, String>()
-                    .add("status", "OK")
-                    .add("session_id", Session.startSession().sessionID));
+        var user = new User(username);
+        if (user.exists()) {
+            user.load();
+
+            // TODO: The password should be one-way hashed...
+            if (password.equals(user.password)) {
+                var session = Session.startSession();
+                session.user = user;
+                Response.json(exchange, new TinyMap<String, String>()
+                        .add("status", "OK")
+                        .add("session_id", session.sessionID));
+            } else {
+                Response.json(exchange, new TinyMap<String, String>()
+                        .add("status", "Failure")
+                        .add("reason", "Incorrect password!"));
+            }
         } else {
             Response.json(exchange, new TinyMap<String, String>()
                     .add("status", "Failure")
-                    .add("reason", "Incorrect password!"));
+                    .add("reason", "Unknown user!"));
         }
+
     }
 
     public static void SettingsSet(HttpServerExchange exchange) {
@@ -44,5 +58,9 @@ public class UserPage {
     }
 
     public static void SettingsGet(HttpServerExchange exchange) {
+    }
+
+    public static void Name(User user, HttpServerExchange exchange) {
+        Response.json(exchange, user.username);
     }
 }
