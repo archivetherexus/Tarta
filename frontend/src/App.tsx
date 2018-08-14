@@ -15,16 +15,18 @@ import Navbar from './components/Navbar';
 import SettingsPage from './components/pages/SettingsPage';
 import FeedPage from './components/pages/FeedPage';
 import LoginPage from './components/pages/LoginPage';
+import CreatePostPage from './components/pages/CreatePostPage';
 
 render(
     <Provider store={store}>
         <BrowserRouter>
             <div>
                 <Navbar/>
-                <Route path="/login" component={LoginPage}/>
-                <Route path="/feed" component={FeedPage}/>
-                <Route path="/settings" component={SettingsPage}/>
-                <Route exact path="/" component={LandingPage}/>
+                <Route path="/login" component={LoginPage} />
+                <Route path="/feed" component={FeedPage} />
+                <Route path="/settings" component={SettingsPage} />
+                <Route path="/create" component={CreatePostPage} />
+                <Route exact path="/" component={LandingPage} />
             </div>
         </BrowserRouter>
     </Provider>,

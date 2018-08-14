@@ -29,6 +29,12 @@ public class Post {
         this.content = content;
     }
 
+    private Document toDocument() {
+        return new Document()
+                .append("title", title)
+                .append("content", content);
+    }
+
     public static Collection<Post> getAll() {
         var list = new ArrayList<Post>();
         var iterator = Post.postCollection.find();
@@ -38,5 +44,11 @@ public class Post {
         }
 
         return list;
+    }
+
+    public static Post create(String title, String content) {
+        var post = new Post(title, content);
+        postCollection.insertOne(post.toDocument());
+        return post;
     }
 }

@@ -36,6 +36,6 @@ public class App {
                 .get("/user/settings/set", UserPage::SettingsSet)
                 .get("/user/name", Handlers.withUser(UserPage::Name))
                 .get("/posts/feed/get", PostsPage::FeedGet)
-                .post("/posts/create", PostsPage::Create);
+                .post("/posts/create", new EagerFormParsingHandler(PostsPage::Create));
     }
 }

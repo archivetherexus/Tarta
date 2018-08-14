@@ -1,5 +1,6 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
+import { Link } from 'inferno-router';
 import { fetchHTTP } from '../../helpers/fetch_http';
 import Post from '../../models/Post';
 
@@ -35,17 +36,20 @@ class FeedPage extends Component<any, {
 
         return (
             <div className="feed-page panel">
-                {feed !== null ? (
-                    feed.map(post => (
-                        <div>
-                            <h3>{post.title}</h3>
-                            {post.content}
-                            <hr />
-                        </div>
-                    ))
-                ) : (
-                    'Loading ...'
-                )}
+                <div>
+                    {feed !== null ? (
+                        feed.map(post => (
+                            <div>
+                                <h3>{post.title}</h3>
+                                {post.content}
+                                <hr />
+                            </div>
+                        ))
+                    ) : (
+                        'Loading ...'
+                    )}
+                </div>
+                <Link to="/create">{'Create a new post.'}</Link>
             </div>
         )
     }

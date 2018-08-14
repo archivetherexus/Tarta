@@ -43,8 +43,13 @@ public class Server {
         Undertow server = Undertow.builder()
                 .addHttpListener(3000, "localhost")
                 .setHandler(httpServerExchange -> {
-                    httpServerExchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-                    routes.handleRequest(httpServerExchange);
+                    try {
+                        httpServerExchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                        routes.handleRequest(httpServerExchange);
+                    } catch(Exception e) {
+                        httpServerExchange.setStatusCode(500);
+                        e.printStackTrace();
+                    }
                 })
                 .build();
         server.start();
