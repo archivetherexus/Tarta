@@ -6,6 +6,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.util.HttpString;
 
 import se.fikaware.tarta.models.Post;
+import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
 
 import java.util.function.Supplier;
@@ -56,6 +57,7 @@ public class Server {
     }
 
     private static void setupDatabase(MongoDatabase database) {
+        School.schoolCollection = database.getCollection("school");
         Post.postCollection = database.getCollection("posts");
         User.userCollection = database.getCollection("users");
     }

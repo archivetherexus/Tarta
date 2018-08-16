@@ -12,7 +12,7 @@ import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 
 public class UserPage {
-    public static void Login(HttpServerExchange exchange) {
+    public static void login(HttpServerExchange exchange) {
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
 
         var logger = LoggerFactory.getLogger(UserPage.class);
@@ -51,14 +51,14 @@ public class UserPage {
 
     }
 
-    public static void SettingsSet(HttpServerExchange exchange) {
+    public static void settingsSet(HttpServerExchange exchange) {
 
     }
 
-    public static void SettingsGet(HttpServerExchange exchange) {
+    public static void settingsGet(HttpServerExchange exchange) {
     }
 
-    public static void Name(User user, HttpServerExchange exchange) {
+    public static void name(User user, HttpServerExchange exchange) {
         Response.json(exchange, user.username);
     }
 }

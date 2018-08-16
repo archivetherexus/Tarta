@@ -5,7 +5,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
-import se.fikaware.misc.TinyMap;
 import se.fikaware.tarta.pages.PostsPage;
 import se.fikaware.tarta.pages.UserPage;
 import se.fikaware.web.Handlers;
@@ -31,11 +30,11 @@ public class App {
 
                     Response.json(req, list);
                 })
-                .post("/user/login", new EagerFormParsingHandler(UserPage::Login))
-                .get("/user/settings/get", UserPage::SettingsGet)
-                .get("/user/settings/set", UserPage::SettingsSet)
-                .get("/user/name", Handlers.withUser(UserPage::Name))
-                .get("/posts/feed/get", PostsPage::FeedGet)
-                .post("/posts/create", new EagerFormParsingHandler(PostsPage::Create));
+                .post("/user/login", new EagerFormParsingHandler(UserPage::login))
+                .get("/user/settings/get", UserPage::settingsGet)
+                .get("/user/settings/set", UserPage::settingsSet)
+                .get("/user/name", Handlers.withUser(UserPage::name))
+                .get("/posts/feed/get", PostsPage::feedGet)
+                .post("/posts/create", new EagerFormParsingHandler(PostsPage::create));
     }
 }
