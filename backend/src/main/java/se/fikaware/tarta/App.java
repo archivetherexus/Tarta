@@ -17,11 +17,7 @@ import java.util.List;
 
 public class App {
     public static void main(final String[] args) {
-        Server.start(() -> getRoutes(), () -> new MongoClient().getDatabase("tarta-dev"));
-    }
-
-    private static HttpHandler getRoutes() {
-        return new RoutingHandler()
+        new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {
                     req.getQueryParameters().get("hello");
                     List<String> list = new ArrayList<>();
@@ -31,13 +27,14 @@ public class App {
 
                     Response.json(req, list);
                 })
-                .post("/user/login", new EagerFormParsingHandler(UserPage::login))
+                .post("/user/login", UserPage::login)
                 .get("/user/settings/get", UserPage::settingsGet)
                 .get("/user/settings/set", UserPage::settingsSet)
                 .get("/user/name", Handlers.withUser(UserPage::name))
                 .get("/posts/feed/get", PostsPage::feedGet)
-                .post("/posts/create", new EagerFormParsingHandler(PostsPage::create))
+                .post("/posts/create", Handlers.withAdmin(PostsPage::create))
                 .get("/admin/school/create", AdminPage::schoolCreate)
-                .get("/admin/school/list", AdminPage::schoolList);
+                .get("/admin/school/list", AdminPage::schoolList)
+                .start();
     }
 }

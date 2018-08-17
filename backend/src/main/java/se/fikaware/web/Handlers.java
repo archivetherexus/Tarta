@@ -2,27 +2,62 @@ package se.fikaware.web;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.form.FormDataParser;
 import se.fikaware.tarta.models.Session;
 import se.fikaware.tarta.models.User;
 import java.util.function.BiConsumer;
 
 public class Handlers {
+    private static Session getSession(HttpServerExchange exchange) {
+        String sessionID;
+        if (exchange.getRequestMethod().equalToString("POST")) {
+            var form = exchange.getAttachment(FormDataParser.FORM_DATA);
+            sessionID = Request.getString(form, "sessionID", null);
+            if (sessionID == null) {
+                throw new BadRequest("You must provide a sessionID!");
+            }
+        } else {
+            var sessionIDAttempt = exchange.getQueryParameters().get("sessionID");
+            if (sessionIDAttempt != null) {
+                sessionID = sessionIDAttempt.getFirst();
+            } else {
+                throw new BadRequest("You must provide a sessionID!");
+            }
+        }
+        return Session.continueSession(sessionID);
+    }
+
     public static HttpHandler withUser(BiConsumer<User, HttpServerExchange> handler) {
         return (exchange) -> {
-            var session_id = exchange.getQueryParameters().get("session_id").getFirst();
-            if (session_id != null) {
-                var session = Session.continueSession(session_id);
-                if (session != null) {
-                    if (session.user != null) {
-                        handler.accept(session.user, exchange);
-                    } else {
-                        // TODO: Report not logged in.
-                    }
+            var session = getSession(exchange);
+            if (session != null) {
+                if (session.user != null) {
+                    handler.accept(session.user, exchange);
                 } else {
-                    // TODO: Report invalid session ID.
+                    throw new ClientError("Please login first!");
                 }
             } else {
-                // TODO: Report error. Not enough parameters.
+                throw new ClientError("Invalid session id! Please login again.");
+            }
+
+        };
+    }
+
+    public static HttpHandler withAdmin(BiConsumer<User, HttpServerExchange> handler) {
+        return (exchange) -> {
+            var session = getSession(exchange);
+            if (session != null) {
+                if (session.user != null) {
+                    if (session.user.isAdmin) {
+                        handler.accept(session.user, exchange);
+                    } else {
+                        throw new ClientError("You're not an admin!");
+                    }
+                } else {
+                    throw new ClientError("Please login first!");
+                }
+            } else {
+                throw new ClientError("Invalid session id! Please login again.");
             }
         };
     }

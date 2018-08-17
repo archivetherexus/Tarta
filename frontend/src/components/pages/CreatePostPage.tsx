@@ -14,7 +14,8 @@ class CreatePostPage extends Component<any, any> {
             
             fetchHTTP('http://localhost:3000/posts/create', {
                 title: title,
-                content: content
+                content: content,
+                sessionID: this.props.session,
             }, {post: true, form: true}).then(() => this.context.router.history.push('/feed'));
         }
     }
@@ -42,4 +43,5 @@ class CreatePostPage extends Component<any, any> {
 
 export default connect((state:any) => ({
     i18n: state.i18n,
+    session: state.session,
 }))(CreatePostPage);

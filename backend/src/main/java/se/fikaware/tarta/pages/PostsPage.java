@@ -4,6 +4,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormDataParser;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
+import se.fikaware.tarta.models.User;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 
@@ -14,7 +15,7 @@ public class PostsPage {
         Response.json(exchange, Post.getAll(school));
     }
 
-    public static void create(HttpServerExchange exchange) {
+    public static void create(User user, HttpServerExchange exchange) {
         School school = School.load("New School");
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
         var title = Request.getString(form, "title", null);

@@ -3,7 +3,7 @@ declare class SessionAction {
     newSessionID?: string;
 }
 
-export default function theme(state = '', action: SessionAction) {
+export default function session(state = '', action: SessionAction) {
     switch(action.type) {
         case 'SET_SESSION_ID':
             return action.newSessionID;

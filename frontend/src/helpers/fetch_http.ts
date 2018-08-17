@@ -36,6 +36,10 @@ export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: 
         request.addEventListener('load', () => {
             if (request.status === 404) {
                 reject('Status code was 404')
+            } else if (request.status === 400 && request.response) {
+                let stringData = String.fromCharCode.apply(null, new Uint8Array(request.response))
+                alert(String(stringData)); // TODO: Prettier alert.
+                reject(stringData);
             } else if (request.response) {
                 let data = msgpack.decode(new Uint8Array(request.response));
                 console.log(data);

@@ -3,8 +3,11 @@ package se.fikaware.web;
 import com.mongodb.client.MongoDatabase;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.RoutingHandler;
+import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import io.undertow.util.HttpString;
 
+import org.slf4j.LoggerFactory;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
@@ -15,12 +18,58 @@ import java.util.logging.*;
 
 public class Server {
 
+    private RoutingHandler routes = new RoutingHandler();
+
     private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
 
-    public static void start(Supplier<HttpHandler> routesCreator, Supplier<MongoDatabase> databaseCreator) {
+    private static org.slf4j.Logger logger;
+
+    public Server post(String path, HttpHandler handler) {
+        routes.post(path, new EagerFormParsingHandler(exchange -> {
+            try {
+                exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                handler.handleRequest(exchange);
+            } catch (ClientError e) {
+                exchange.setStatusCode(400);
+                exchange.getResponseSender().send(e.getMessage());
+            } catch (BadRequest b) {
+                exchange.setStatusCode(400);
+                logger.error(b.getMessage());
+            } catch(Throwable r) {
+                exchange.setStatusCode(500);
+                r.printStackTrace();
+            }
+        }));
+        return this;
+    }
+
+    public Server get(String path, HttpHandler handler) {
+        routes.get(path, exchange -> {
+            try {
+                exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                handler.handleRequest(exchange);
+            } catch (ClientError e) {
+                exchange.setStatusCode(400);
+                exchange.getResponseSender().send(e.getMessage());
+            } catch (BadRequest b) {
+                exchange.setStatusCode(400);
+                logger.error(b.getMessage());
+            } catch(Throwable r) {
+                exchange.setStatusCode(500);
+                r.printStackTrace();
+            }
+        });
+        return this;
+    }
+
+    public Server(Supplier<MongoDatabase> databaseCreator) {
         setupLogger();
         setupDatabase(databaseCreator.get());
-        setupWebServer(routesCreator.get());
+
+    }
+
+    public void start() {
+        setupWebServer(routes);
     }
 
     private static void setupLogger() {
@@ -38,20 +87,14 @@ public class Server {
         for(Handler handler : handlers) {
             handler.setFormatter(formatter);
         }
+
+        Server.logger = LoggerFactory.getLogger(Server.class);
     }
 
     private static void setupWebServer(HttpHandler routes) {
         Undertow server = Undertow.builder()
                 .addHttpListener(3000, "localhost")
-                .setHandler(httpServerExchange -> {
-                    try {
-                        httpServerExchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-                        routes.handleRequest(httpServerExchange);
-                    } catch(Exception e) {
-                        httpServerExchange.setStatusCode(500);
-                        e.printStackTrace();
-                    }
-                })
+                .setHandler(routes)
                 .build();
         server.start();
     }
@@ -61,22 +104,10 @@ public class Server {
         Post.postCollection = database.getCollection("posts");
         User.userCollection = database.getCollection("users");
     }
-
-    /*
-
+}
+/*
     SCRAP YARD:
-
-    static void testDatabase() {
-        var collection = db.getCollection("people");
-        var person = new Document().append("name", "John Smith")
-                                   .append("age", 19)
-                                   .append("great", true);
-        collection.insertOne(person);
-    }
-
     // Read the rest of the body... Wrap inside: BlockingHandler
     var body = new String(req.getInputStream().readAllBytes());
     System.out.println(body);
-
-    */
-}
+*/

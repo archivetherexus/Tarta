@@ -27,6 +27,8 @@ public class UserPage {
             return;
         }
 
+        logger.info("User: " + username + ", Password: " + password);
+
 
         if (User.exists(username)) {
             var user = User.load(username);

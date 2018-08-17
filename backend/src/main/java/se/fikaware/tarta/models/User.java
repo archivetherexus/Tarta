@@ -10,15 +10,19 @@ public class User {
 
     public String password;
 
+    public boolean isAdmin;
+
     public User() {
         this.username = "";
         this.password = "";
+        this.isAdmin = false;
     }
 
     private Document toDocument() {
         return new Document()
                 .append("username", username)
-                .append("password", password);
+                .append("password", password)
+                .append("is_admin", isAdmin);
     }
 
     public void insert() {
@@ -39,6 +43,7 @@ public class User {
         var data = userCollection.find(new Document().append("username", username)).first();
         user.username = username;
         user.password = data.getString("password");
+        user.isAdmin = data.getBoolean("is_admin");
         return user;
     }
 }
