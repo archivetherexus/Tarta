@@ -24,6 +24,7 @@ public class Post {
 
     @SuppressWarnings("unused")
     public Post() {
+        this.school = null;
         this.title = "";
         this.content = "";
     }
@@ -35,15 +36,14 @@ public class Post {
     }
 
     private Document toDocument() {
-        return new Document()
-                .append("school", school.reference)
+        return new Document("school", school.reference)
                 .append("title", title)
                 .append("content", content);
     }
 
     public static Collection<Post> getAll(School school) {
         var list = new ArrayList<Post>();
-        var iterator = Post.postCollection.find(new Document().append("school", school.reference));
+        var iterator = postCollection.find(new Document().append("school", school.reference));
 
         for (var entry: iterator) {
             var title = entry.getString("title");

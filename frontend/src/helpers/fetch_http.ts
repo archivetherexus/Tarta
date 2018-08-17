@@ -38,7 +38,7 @@ export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: 
                 reject('Status code was 404')
             } else if (request.response) {
                 let data = msgpack.decode(new Uint8Array(request.response));
-                //console.log(data);
+                console.log(data);
                 resolve(data);
             } else {
                 reject('No response in request object!');

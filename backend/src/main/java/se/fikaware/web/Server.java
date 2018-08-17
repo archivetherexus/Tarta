@@ -57,7 +57,7 @@ public class Server {
     }
 
     private static void setupDatabase(MongoDatabase database) {
-        School.schoolCollection = database.getCollection("school");
+        School.schoolCollection = database.getCollection("schools");
         Post.postCollection = database.getCollection("posts");
         User.userCollection = database.getCollection("users");
     }

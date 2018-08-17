@@ -5,6 +5,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
+import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.PostsPage;
 import se.fikaware.tarta.pages.UserPage;
 import se.fikaware.web.Handlers;
@@ -35,6 +36,8 @@ public class App {
                 .get("/user/settings/set", UserPage::settingsSet)
                 .get("/user/name", Handlers.withUser(UserPage::name))
                 .get("/posts/feed/get", PostsPage::feedGet)
-                .post("/posts/create", new EagerFormParsingHandler(PostsPage::create));
+                .post("/posts/create", new EagerFormParsingHandler(PostsPage::create))
+                .get("/admin/school/create", AdminPage::schoolCreate)
+                .get("/admin/school/list", AdminPage::schoolList);
     }
 }

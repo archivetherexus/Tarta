@@ -16,6 +16,7 @@ import SettingsPage from './components/pages/SettingsPage';
 import FeedPage from './components/pages/FeedPage';
 import LoginPage from './components/pages/LoginPage';
 import CreatePostPage from './components/pages/CreatePostPage';
+import AdminPage from './components/pages/AdminPage';
 
 render(
     <Provider store={store}>
@@ -24,6 +25,7 @@ render(
                 <Navbar/>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/feed" component={FeedPage} />
+                <Route path="/admin" component={AdminPage} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path="/create" component={CreatePostPage} />
                 <Route exact path="/" component={LandingPage} />
