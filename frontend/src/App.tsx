@@ -17,18 +17,24 @@ import FeedPage from './components/pages/FeedPage';
 import LoginPage from './components/pages/LoginPage';
 import CreatePostPage from './components/pages/CreatePostPage';
 import AdminPage from './components/pages/AdminPage';
+import Footer from './components/Footer';
+import PrivacyPolicyPage from './components/pages/PrivacyPolicyPage';
+import AboutUsPage from './components/pages/AboutUsPage';
 
 render(
     <Provider store={store}>
         <BrowserRouter>
             <div>
-                <Navbar/>
+                <Navbar />
                 <Route path="/login" component={LoginPage} />
                 <Route path="/feed" component={FeedPage} />
                 <Route path="/admin" component={AdminPage} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path="/create" component={CreatePostPage} />
+                <Route path="/privacy_policy" component={PrivacyPolicyPage} />
+                <Route path="/about_us" component={AboutUsPage} />
                 <Route exact path="/" component={LandingPage} />
+                <Footer />
             </div>
         </BrowserRouter>
     </Provider>,

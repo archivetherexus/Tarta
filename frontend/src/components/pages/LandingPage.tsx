@@ -11,14 +11,19 @@ class LandingPage extends Component<any, any> {
         const { i18n } = this.props;
         return (
             <div className="landing-page panel">
-                <div className="main-title">
-                    {'Tarta is a new way to interact with your school!'}
-                    <br /><br />
-                    <button onClick={this.handleClickLoginButton} className="sugar-button login-button equal-button-width">{i18n('Login now')}</button>
-                    <br />
-                    {'or'}
-                    <br />
-                    <button onClick={this.handleClickFindOutMore} className="sugar-button find-out-more-button equal-button-width">{i18n('Find out more')}</button>
+                <div className="main-info">
+                    <div className="main-title">
+                        {'Tarta is a new way to interact with your school!'}
+                        <br /><br />
+                        <button onClick={this.handleClickLoginButton} className="sugar-button login-button equal-button-width">{i18n('Login now')}</button>
+                        <br />
+                        {'or'}
+                        <br />
+                        <button onClick={this.handleClickFindOutMore} className="sugar-button find-out-more-button equal-button-width">{i18n('Find out more')}</button>
+                    </div>
+                </div>
+                <div className="more-info">
+                    {'More information...'}
                 </div>
             </div>
         );

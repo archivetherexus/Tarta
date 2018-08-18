@@ -45,20 +45,17 @@ class LoginPage extends Component<any, any> {
             }, {post: true, form: true}).then(r => {
                 if (r.status == 'OK') {
                     this.context.store.dispatch({
-                        type: 'SET_SESSION_ID',
-                        newSessionID: r.session_id,
+                        type: 'SET_sessionID',
+                        newSessionID: r.sessionID,
                     });
-                    console.log("New session ID: " + r.session_id);
+                    console.log("New session ID: " + r.sessionID);
                     this.context.router.history.push('/');
 
-
                     fetchHTTP('http://localhost:3000/user/name', {
-                        session_id: r.session_id,
+                        sessionID: r.sessionID,
                     }).then(username => {
                         console.log('Username: ' + username);
                     });
-
-
                 } else {
                     alert(r.reason);
                 }

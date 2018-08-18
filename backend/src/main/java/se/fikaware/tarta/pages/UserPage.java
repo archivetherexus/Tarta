@@ -39,7 +39,7 @@ public class UserPage {
                 session.user = user;
                 Response.json(exchange, new TinyMap<String, String>()
                         .add("status", "OK")
-                        .add("session_id", session.sessionID));
+                        .add("sessionID", session.sessionID));
             } else {
                 Response.json(exchange, new TinyMap<String, String>()
                         .add("status", "Failure")

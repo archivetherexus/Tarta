@@ -1,4 +1,5 @@
 @import './misc/navbar';
+@import './misc/footer';
 @import './sugar';
 
 @import './pages/landing_page';
@@ -13,7 +14,7 @@ html {
 body {
     margin: 0px;
     background: var(--site-background);
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     background-size: cover;
     width: 100%;
     height: 100%;

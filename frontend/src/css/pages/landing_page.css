@@ -1,11 +1,18 @@
+.landing-page .main-info {
+    height: 90vh;
+}
+
 .landing-page .main-title {
-    position: absolute;
     text-align: center;
     font-size: 35px;
-    bottom: auto;
-    left: 0;
+    height: 400px;
+    
+    margin: auto;  
+    position: absolute;
+    left:0;
     right: 0;
-    bottom: 60%;
+    top: 0;
+    bottom: 0;
 }
 
 .landing-page .login-button {
@@ -18,4 +25,9 @@
 
 .landing-page .equal-button-width {
     width: 306px;
+}
+
+.landing-page .more-info {
+    height: 200px;
+    background-color: cadetblue;
 }
