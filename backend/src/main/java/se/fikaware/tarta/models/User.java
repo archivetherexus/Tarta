@@ -3,6 +3,7 @@ package se.fikaware.tarta.models;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
+
 public class User {
     static public MongoCollection<Document> userCollection = null;
 

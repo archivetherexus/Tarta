@@ -5,18 +5,20 @@ import org.bson.Document;
 import org.msgpack.annotation.Ignore;
 import org.msgpack.annotation.Index;
 import org.msgpack.annotation.Message;
+import se.fikaware.sync.Name;
+import se.fikaware.sync.Syncable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Message
+@Message @Syncable
 public class Post {
     static public MongoCollection<Document> postCollection = null;
 
-    @Index(0)
+    @Index(0) @Name("title")
     public String title;
 
-    @Index(1)
+    @Index(1) @Name("content")
     public String content;
 
     @Ignore
@@ -29,7 +31,7 @@ public class Post {
         this.content = "";
     }
 
-    private Post(School school, String title, String content) {
+    public Post(School school, String title, String content) {
         this.school = school;
         this.title = title;
         this.content = content;

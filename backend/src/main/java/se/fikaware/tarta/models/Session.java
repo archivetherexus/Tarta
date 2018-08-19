@@ -1,13 +1,14 @@
 package se.fikaware.tarta.models;
 
+import se.fikaware.sync.Syncable;
+
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class
-Session {
+public class Session {
     private static Map<String, Session> sessions = new HashMap<>();
 
     public String sessionID;

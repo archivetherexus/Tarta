@@ -5,6 +5,10 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
+import se.fikaware.sync.IWriter;
+import se.fikaware.sync.Syncer;
+import se.fikaware.tarta.models.Post;
+import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.PostsPage;
 import se.fikaware.tarta.pages.UserPage;
@@ -13,10 +17,58 @@ import se.fikaware.web.Response;
 import se.fikaware.web.Server;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class App {
     public static void main(final String[] args) {
+        var s = new Syncer();
+        var i = new IWriter() {
+            @Override
+            public void writeNull() {
+                System.out.println("Null");
+            }
+
+            @Override
+            public void writeInteger(int i) {
+                System.out.println("Write integer: " + i);
+            }
+
+            @Override
+            public void writeString(String s) {
+                System.out.println("Write string: " + s);
+            }
+
+            @Override
+            public void writeArrayBegin() {
+                System.out.println("[");
+            }
+
+            @Override
+            public void writeArrayEnd() {
+                System.out.println("]");
+            }
+
+            @Override
+            public void writeMapBegin() {
+                System.out.println("{");
+            }
+
+            @Override
+            public void writeKey(String keyName) {
+                System.out.println(keyName + ": ");
+            }
+
+            @Override
+            public void writeMapEnd() {
+                System.out.println("}");
+            }
+        };
+        var arr1 = new LinkedList<Post>();
+        arr1.add(new Post(new School(), "Title1", "Content1"));
+        arr1.add(new Post(new School(), "Title2", "Content2"));
+        arr1.add(null);
+        s.write(i, arr1);
         new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {
                     req.getQueryParameters().get("hello");

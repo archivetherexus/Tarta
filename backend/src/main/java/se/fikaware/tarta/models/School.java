@@ -6,15 +6,18 @@ import org.bson.types.ObjectId;
 import org.msgpack.annotation.Ignore;
 import org.msgpack.annotation.Index;
 import org.msgpack.annotation.Message;
+import se.fikaware.sync.Name;
+import se.fikaware.sync.Syncable;
 
+import javax.websocket.OnMessage;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Message
+@Message @Syncable
 public class School {
     public static MongoCollection<Document> schoolCollection = null;
 
-    @Index(0)
+    @Index(0) @Name("name")
     public final String schoolName;
 
     @Ignore
