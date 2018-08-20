@@ -1,6 +1,5 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
-//import msgpack from 'msgpack-lite';
 import { fetchHTTP } from '../../helpers/fetch_http';
 
 class LoginPage extends Component<any, any> {
@@ -39,7 +38,11 @@ class LoginPage extends Component<any, any> {
             });
 
 
-            fetchHTTP('http://localhost:3000/user/login', {
+            fetchHTTP<{
+                status: string;
+                sessionID: string;
+                reason?: string;
+            }>('http://localhost:3000/user/login', {
                 username, 
                 password
             }, {post: true, form: true}).then(r => {
@@ -51,7 +54,7 @@ class LoginPage extends Component<any, any> {
                     console.log("New session ID: " + r.sessionID);
                     this.context.router.history.push('/');
 
-                    fetchHTTP('http://localhost:3000/user/name', {
+                    fetchHTTP<string>('http://localhost:3000/user/name', {
                         sessionID: r.sessionID,
                     }).then(username => {
                         console.log('Username: ' + username);

@@ -2,15 +2,13 @@ package se.fikaware.sync;
 
 import org.reflections.Reflections;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class Syncer {
     private interface IObjectSyncer {
-        void write(Object o, IWriter i) throws IllegalAccessException;
+        void write(Object o, IWriter i)  throws IOException, IllegalAccessException;
     }
 
     private static class ParsedField {
@@ -45,9 +43,17 @@ public class Syncer {
 
             objectSyncers.put(classObject, (o, i) -> {
                 i.writeMapBegin();
-                for (var parsedField : parsedFields) {
-                    i.writeKey(parsedField.name);
+                var iterator = parsedFields.iterator();
+                if (iterator.hasNext()) {
+                    var parsedField = iterator.next();
+                    i.writeMapKey(parsedField.name);
                     write(i, parsedField.field.get(o));
+                    while(iterator.hasNext()) {
+                        i.writeMapNext();
+                        parsedField = iterator.next();
+                        i.writeMapKey(parsedField.name);
+                        write(i, parsedField.field.get(o));
+                    }
                 }
                 i.writeMapEnd();
             });
@@ -64,14 +70,35 @@ public class Syncer {
         );
         objectSyncers.put(Collection.class, (o, i) -> {
             i.writeArrayBegin();
-            for (Object object : (Collection)o) {
-                write(i, object);
+            var iterator = ((Collection)o).iterator();
+            if (iterator.hasNext()) {
+                write(i, iterator.next());
+                while(iterator.hasNext()) {
+                    i.writeArrayNext();
+                    write(i, iterator.next());
+                }
             }
             i.writeArrayEnd();
         });
+        objectSyncers.put(Map.class, (o, i) -> {
+            i.writeMapBegin();
+            Iterator<Map.Entry> iterator = ((Map)o).entrySet().iterator();
+            if (iterator.hasNext()) {
+                var entry = iterator.next();
+                i.writeMapKey(entry.getKey().toString());
+                write(i, entry.getValue());
+                while(iterator.hasNext()) {
+                    i.writeMapNext();
+                    entry = iterator.next();
+                    i.writeMapKey(entry.getKey().toString());
+                    write(i, entry.getValue());
+                }
+            }
+            i.writeMapEnd();
+        });
     }
 
-    public void write(IWriter i, Object o) {
+    public void write(IWriter i, Object o) throws IOException {
         if (o == null) {
             i.writeNull();
         } else {

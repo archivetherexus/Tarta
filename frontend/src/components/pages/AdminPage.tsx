@@ -2,8 +2,6 @@ import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
 import { fetchHTTP } from '../../helpers/fetch_http';
 
-import School from '../../models/School';
-
 class Admin extends Component<any, {
     schools: [School] | null, 
 }> {
@@ -19,7 +17,7 @@ class Admin extends Component<any, {
     }
 
     fetchSchools() {
-        fetchHTTP('http://localhost:3000/admin/school/list').then(list => list !== null && this.setState({schools: list.map(School.fromArray)}));
+        fetchHTTP<[School]>('http://localhost:3000/admin/school/list').then(list => this.setState({schools: list}));
     }
 
     schoolNameRef: HTMLInputElement | null = null;

@@ -2,7 +2,6 @@ import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
 import { Link } from 'inferno-router';
 import { fetchHTTP } from '../../helpers/fetch_http';
-import Post from '../../models/Post';
 
 class FeedPage extends Component<any, {
     feed: Post[] | null
@@ -14,17 +13,9 @@ class FeedPage extends Component<any, {
             feed: null,
         };
     }
-    parseFeed(feed: [string, string][]): Post[] {
-        console.log("got so far!");
-        console.log(feed);
-        var arr = feed.map(Post.fromArray);
-        console.log("Mapped:");
-        console.log(arr);
-        return arr;
-    }
     fetchFeed() {
-        fetchHTTP('http://localhost:3000/posts/feed/get')
-        .then(feed => feed !== null && this.setState({feed: this.parseFeed(feed)}));
+        fetchHTTP<[Post]>('http://localhost:3000/posts/feed/get')
+        .then(feed => this.setState({feed}));
     }
     render() {
         if (this.state === null) {

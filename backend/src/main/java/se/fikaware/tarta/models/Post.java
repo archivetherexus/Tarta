@@ -2,26 +2,22 @@ package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.msgpack.annotation.Ignore;
-import org.msgpack.annotation.Index;
-import org.msgpack.annotation.Message;
 import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Message @Syncable
+@Syncable
 public class Post {
     static public MongoCollection<Document> postCollection = null;
 
-    @Index(0) @Name("title")
+    @Name("title")
     public String title;
 
-    @Index(1) @Name("content")
+    @Name("content")
     public String content;
 
-    @Ignore
     private School school;
 
     @SuppressWarnings("unused")

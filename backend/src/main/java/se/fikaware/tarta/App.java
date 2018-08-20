@@ -7,6 +7,7 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import se.fikaware.sync.IWriter;
 import se.fikaware.sync.Syncer;
+import se.fikaware.sync.json.JsonWriter;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.pages.AdminPage;
@@ -16,6 +17,7 @@ import se.fikaware.web.Handlers;
 import se.fikaware.web.Response;
 import se.fikaware.web.Server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +47,11 @@ public class App {
             }
 
             @Override
+            public void writeArrayNext() throws IOException {
+                System.out.println("-------");
+            }
+
+            @Override
             public void writeArrayEnd() {
                 System.out.println("]");
             }
@@ -55,8 +62,13 @@ public class App {
             }
 
             @Override
-            public void writeKey(String keyName) {
+            public void writeMapKey(String keyName) {
                 System.out.println(keyName + ": ");
+            }
+
+            @Override
+            public void writeMapNext() throws IOException {
+                System.out.println("-------");
             }
 
             @Override
@@ -68,7 +80,12 @@ public class App {
         arr1.add(new Post(new School(), "Title1", "Content1"));
         arr1.add(new Post(new School(), "Title2", "Content2"));
         arr1.add(null);
-        s.write(i, arr1);
+        try {
+            //s.write(i, arr1);
+            s.write(new JsonWriter(System.out), arr1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {
                     req.getQueryParameters().get("hello");

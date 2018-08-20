@@ -1,7 +1,7 @@
 import { Promise } from 'es6-promise';
-import msgpack from 'msgpack-lite';
 
 // Automatically install the polyfill. //
+declare var require: any
 require('es6-promise/auto');
 
 function encodeQueryData(data: any) {
@@ -12,7 +12,7 @@ function encodeQueryData(data: any) {
     return parameters.join('&');
  }
 
-export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: {form: boolean, post: boolean}) {
+export function fetchHTTP<T>(url: string, data?: {[index: string]: any}, options?: {form: boolean, post: boolean}) {
     
     // Create the body to send. //
     let toSend: any = null; 
@@ -30,18 +30,18 @@ export function fetchHTTP(url: string, data?: {[index: string]: any}, options?: 
     }
 
     // Returns a promise that sends the request. //
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
         let request = new XMLHttpRequest();
-        request.responseType = "arraybuffer";
+        request.responseType = "text";
         request.addEventListener('load', () => {
             if (request.status === 404) {
                 reject('Status code was 404')
             } else if (request.status === 400 && request.response) {
-                let stringData = String.fromCharCode.apply(null, new Uint8Array(request.response))
+                let stringData = request.response;
                 alert(String(stringData)); // TODO: Prettier alert.
                 reject(stringData);
             } else if (request.response) {
-                let data = msgpack.decode(new Uint8Array(request.response));
+                let data = JSON.parse(request.response);
                 console.log(data);
                 resolve(data);
             } else {

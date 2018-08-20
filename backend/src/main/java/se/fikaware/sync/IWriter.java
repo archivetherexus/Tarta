@@ -1,12 +1,16 @@
 package se.fikaware.sync;
 
+import java.io.IOException;
+
 public interface IWriter {
-    void writeNull();
-    void writeInteger(int i);
-    void writeString(String s);
-    void writeArrayBegin();
-    void writeArrayEnd();
-    void writeMapBegin();
-    void writeKey(String keyName);
-    void writeMapEnd();
+    void writeNull() throws IOException;
+    void writeInteger(int i) throws IOException;
+    void writeString(String s) throws IOException;
+    void writeArrayBegin() throws IOException;
+    void writeArrayNext() throws IOException;
+    void writeArrayEnd() throws IOException;
+    void writeMapBegin() throws IOException;
+    void writeMapKey(String keyName) throws IOException;
+    void writeMapNext() throws IOException;
+    void writeMapEnd() throws IOException;
 }
