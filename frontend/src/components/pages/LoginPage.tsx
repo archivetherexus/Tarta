@@ -48,7 +48,7 @@ class LoginPage extends Component<any, any> {
             }, {post: true, form: true}).then(r => {
                 if (r.status == 'OK') {
                     this.context.store.dispatch({
-                        type: 'SET_sessionID',
+                        type: 'SET_SESSION_ID',
                         newSessionID: r.sessionID,
                     });
                     console.log("New session ID: " + r.sessionID);

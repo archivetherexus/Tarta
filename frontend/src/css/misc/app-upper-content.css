@@ -1,0 +1,6 @@
+.app-upper-content {
+    min-height: 100vh;
+    background: var(--site-background);
+    background-repeat: repeat-y;
+    background-size: cover;
+}

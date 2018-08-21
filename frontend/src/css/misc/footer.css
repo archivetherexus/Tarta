@@ -1,6 +1,4 @@
 .footer {
-    position: absolute;
-    bottom: -40px;
     display: flex;
     background-color: var(--panel-shaded-background);
     justify-content: space-around;

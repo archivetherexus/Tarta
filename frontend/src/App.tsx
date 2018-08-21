@@ -1,6 +1,7 @@
-import { render, Component } from 'inferno';
-import { Provider } from 'inferno-redux';
-import { BrowserRouter, Route } from 'inferno-router';
+import { render, Component, createComponentVNode } from 'inferno';
+import { VNodeFlags } from 'inferno-vnode-flags';
+import { Provider, connect } from 'inferno-redux';
+import { BrowserRouter, Route, withRouter} from 'inferno-router';
 
 // Load all the themes, fonts and icon packs. //
 import './css/dark-theme.css';
@@ -21,20 +22,30 @@ import Footer from './components/Footer';
 import PrivacyPolicyPage from './components/pages/PrivacyPolicyPage';
 import AboutUsPage from './components/pages/AboutUsPage';
 
+function renderSubpage(component: any, props: any = {}) {
+    return () => (
+        <div>
+            <div className="app-upper-content">
+                <Navbar />
+                {createComponentVNode(VNodeFlags.ComponentUnknown, component, props)}
+            </div>
+            <Footer />  
+        </div>
+    );
+}
+
 render(
     <Provider store={store}>
         <BrowserRouter>
-            <div>
-                <Navbar />
-                <Route path="/login" component={LoginPage} />
-                <Route path="/feed" component={FeedPage} />
-                <Route path="/admin" component={AdminPage} />
-                <Route path="/settings" component={SettingsPage} />
-                <Route path="/create" component={CreatePostPage} />
-                <Route path="/privacy_policy" component={PrivacyPolicyPage} />
-                <Route path="/about_us" component={AboutUsPage} />
-                <Route exact path="/" component={LandingPage} />
-                <Footer />
+            <div className="app-upper-content">
+                <Route path="/login" render={renderSubpage(LoginPage)} />
+                <Route path="/feed" render={renderSubpage(FeedPage)} />
+                <Route path="/admin" render={renderSubpage(AdminPage)} />
+                <Route path="/settings" render={renderSubpage(SettingsPage)} />
+                <Route path="/create" render={renderSubpage(CreatePostPage)} />
+                <Route path="/privacy_policy" render={renderSubpage(PrivacyPolicyPage)} />
+                <Route path="/about_us" render={renderSubpage(AboutUsPage)} />
+                <Route exact path="/" render={renderSubpage(LandingPage)} />  
             </div>
         </BrowserRouter>
     </Provider>,

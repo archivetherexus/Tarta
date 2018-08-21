@@ -7,7 +7,6 @@ import se.fikaware.sync.json.JsonWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Response {
     public static <T> void json(HttpServerExchange exchange, T object) {
