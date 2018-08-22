@@ -1,8 +1,12 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
 import { fetchHTTP } from '../../helpers/fetch_http';
+import Tabs from '../tabs/Tabs';
+import Tab from '../tabs/Tab';
 
-class Admin extends Component<any, {
+class Admin extends Component<{
+    i18n: (i: string) => string;
+}, {
     schools: [School] | null, 
 }> {
     
@@ -42,19 +46,25 @@ class Admin extends Component<any, {
         const { schools } = this.state;
 
         return (
-            <div className="panel popup">
-                <b>{i18n('School')}</b>
-                <div>
-                    {schools && schools.map(s => (
+            <div className="sugar-panel">
+                <Tabs>
+                    <Tab title="School">
                         <div>
-                            {s.name}
-                            <br />
+                            {schools && schools.map(s => (
+                                <div>
+                                    {s.name}
+                                    <br />
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <br />
-                <input ref={(r) => this.schoolNameRef = r} />
-                <button onClick={this.handleNewSchoolSubmit}>{i18n('Create')}</button>
+                        <br />
+                        <input ref={(r) => this.schoolNameRef = r} />
+                        <button onClick={this.handleNewSchoolSubmit}>{i18n('Create')}</button>
+                    </Tab>
+                    <Tab title="Test">
+                        {'Test 2'}
+                    </Tab>
+                </Tabs>
             </div>
         );
     }

@@ -9,9 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class Response {
+    static private Syncer syncer = new Syncer();
     public static <T> void json(HttpServerExchange exchange, T object) {
         try {
-            Syncer syncer = new Syncer();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             syncer.write(new JsonWriter(outputStream), object);
             exchange.getResponseSender().send(outputStream.toString());

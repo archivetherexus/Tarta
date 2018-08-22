@@ -1,0 +1,20 @@
+.tabs-component-upper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 20px;
+    line-height: 20px;
+}
+
+.tab-component {
+    font-size: 19px;
+    text-decoration-line: underline;
+}
+
+.tab-component:hover {
+    font-weight: 600;
+}
+
+.tab-component.active {
+    font-weight: bold;
+}

@@ -1,6 +1,7 @@
 @import './misc/navbar';
 @import './misc/footer';
 @import './misc/app-upper-content';
+@import './misc/tabs.css';
 @import './sugar';
 
 @import './pages/landing_page';
