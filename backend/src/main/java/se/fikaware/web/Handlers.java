@@ -3,12 +3,17 @@ package se.fikaware.web;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormDataParser;
+import se.fikaware.misc.EverythingIsNonnullByDefault;
 import se.fikaware.tarta.models.Session;
 import se.fikaware.tarta.models.User;
+
+import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 
+@EverythingIsNonnullByDefault
 public class Handlers {
-    private static Session getSession(HttpServerExchange exchange) {
+    private static @Nullable
+    Session getSession(HttpServerExchange exchange) {
         String sessionID;
         if (exchange.getRequestMethod().equalToString("POST")) {
             var form = exchange.getAttachment(FormDataParser.FORM_DATA);

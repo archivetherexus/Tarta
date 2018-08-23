@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class JsonWriter implements IWriter {
-    OutputStream outputStream;
-    byte[] nullBytes = "null".getBytes();
+    private OutputStream outputStream;
+    private byte[] nullBytes = "null".getBytes();
 
     public JsonWriter(OutputStream outputStream) {
         this.outputStream = outputStream;

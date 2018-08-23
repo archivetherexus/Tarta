@@ -1,5 +1,8 @@
 package se.fikaware.web;
 
+import se.fikaware.misc.EverythingIsNonnullByDefault;
+
+@EverythingIsNonnullByDefault
 public class BadRequest extends RuntimeException {
     private String message;
 

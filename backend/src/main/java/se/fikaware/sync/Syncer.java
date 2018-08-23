@@ -1,11 +1,14 @@
 package se.fikaware.sync;
 
 import org.reflections.Reflections;
+import se.fikaware.misc.EverythingIsNonnullByDefault;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@EverythingIsNonnullByDefault
 public class Syncer {
     private interface IObjectSyncer {
         void write(Object o, IWriter i)  throws IOException, IllegalAccessException;
@@ -82,6 +85,7 @@ public class Syncer {
         });
         objectSyncers.put(Map.class, (o, i) -> {
             i.writeMapBegin();
+            @SuppressWarnings("unchecked")
             Iterator<Map.Entry> iterator = ((Map)o).entrySet().iterator();
             if (iterator.hasNext()) {
                 var entry = iterator.next();
@@ -98,7 +102,7 @@ public class Syncer {
         });
     }
 
-    public void write(IWriter i, Object o) throws IOException {
+    public void write(IWriter i, @Nullable Object o) throws IOException {
         if (o == null) {
             i.writeNull();
         } else {

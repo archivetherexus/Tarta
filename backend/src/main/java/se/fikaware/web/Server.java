@@ -8,6 +8,7 @@ import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import io.undertow.util.HttpString;
 
 import org.slf4j.LoggerFactory;
+import se.fikaware.misc.EverythingIsNonnullByDefault;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
@@ -15,14 +16,14 @@ import se.fikaware.tarta.models.User;
 import java.util.function.Supplier;
 import java.util.logging.*;
 
-
+@EverythingIsNonnullByDefault
 public class Server {
 
     private RoutingHandler routes = new RoutingHandler();
 
     private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
 
-    private static org.slf4j.Logger logger;
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(Server.class);
 
     public Server post(String path, HttpHandler handler) {
         routes.post(path, new EagerFormParsingHandler(exchange -> {
@@ -91,8 +92,6 @@ public class Server {
         for(Handler handler : handlers) {
             handler.setFormatter(formatter);
         }
-
-        Server.logger = LoggerFactory.getLogger(Server.class);
     }
 
     private static void setupWebServer(HttpHandler routes) {

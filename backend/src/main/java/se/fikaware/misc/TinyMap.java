@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.lang.UnsupportedOperationException;
+import javax.annotation.Nonnull;
 
 public class TinyMap<K, V> implements Map<K, V> {
     private class TinyMapEntry implements Entry<K, V> {
@@ -138,7 +139,7 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
+    public void putAll(@Nonnull Map<? extends K, ? extends V> m) {
         for (var entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
@@ -151,7 +152,7 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public Set<K> keySet() {
+    public @Nonnull Set<K> keySet() {
         return new Set<>() {
 
             @Override
@@ -170,7 +171,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public Iterator<K> iterator() {
+            public @Nonnull Iterator<K> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -211,7 +212,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean addAll(Collection c) {
+            public boolean addAll(@Nonnull Collection c) {
                 throw new UnsupportedOperationException();
             }
 
@@ -222,7 +223,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean removeAll(Collection c) {
+            public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && c.contains(first)) {
                     first = first.next;
@@ -242,7 +243,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean retainAll(Collection c) {
+            public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && !c.contains(first)) {
                     first = first.next;
@@ -262,7 +263,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean containsAll(Collection c) {
+            public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
                 while(entry != null) {
                     if (!c.contains(entry)) {
@@ -274,27 +275,23 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public <T> T[] toArray(T[] a) {
-                if (a == null) {
-                    throw new NullPointerException();
-                } else {
-                    @SuppressWarnings("unchecked")
-                    var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
-                    var entry = first;
-                    int index = 0;
-                    while (entry != null) {
-                        //noinspection unchecked
-                        array[index++] = (T) entry.key;
-                        entry = entry.next;
-                    }
-                    return array;
+            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+                @SuppressWarnings("unchecked")
+                var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
+                var entry = first;
+                int index = 0;
+                while (entry != null) {
+                    //noinspection unchecked
+                    array[index++] = (T) entry.key;
+                    entry = entry.next;
                 }
+                return array;
             }
         };
     }
 
     @Override
-    public Collection<V> values() {
+    public @Nonnull Collection<V> values() {
         return new Collection<>() {
             @Override
             public int size() {
@@ -312,7 +309,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public Iterator<V> iterator() {
+            public @Nonnull Iterator<V> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -353,7 +350,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean addAll(Collection c) {
+            public boolean addAll(@Nonnull Collection c) {
                 throw new UnsupportedOperationException();
             }
 
@@ -364,7 +361,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean removeAll(Collection c) {
+            public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && c.contains(first)) {
                     first = first.next;
@@ -384,7 +381,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean retainAll(Collection c) {
+            public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && !c.contains(first)) {
                     first = first.next;
@@ -404,7 +401,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean containsAll(Collection c) {
+            public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
                 while(entry != null) {
                     if (!c.contains(entry)) {
@@ -416,27 +413,23 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public <T> T[] toArray(T[] a) {
-                if (a == null) {
-                    throw new NullPointerException();
-                } else {
-                    @SuppressWarnings("unchecked")
-                    var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
-                    var entry = first;
-                    int index = 0;
-                    while (entry != null) {
-                        //noinspection unchecked
-                        array[index++] = (T) entry.value;
-                        entry = entry.next;
-                    }
-                    return array;
+            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+                @SuppressWarnings("unchecked")
+                var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
+                var entry = first;
+                int index = 0;
+                while (entry != null) {
+                    //noinspection unchecked
+                    array[index++] = (T) entry.value;
+                    entry = entry.next;
                 }
+                return array;
             }
         };
     }
 
     @Override
-    public Set<Entry<K, V>> entrySet() {
+    public @Nonnull Set<Entry<K, V>> entrySet() {
         return new Set<>() {
 
             @Override
@@ -455,7 +448,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public Iterator<Entry<K, V>> iterator() {
+            public @Nonnull Iterator<Entry<K, V>> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -497,7 +490,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean addAll(Collection<? extends Entry<K, V>> c) {
+            public boolean addAll(@Nonnull Collection<? extends Entry<K, V>> c) {
                 for (var e : c) {
                     TinyMap.this.put(e.getKey(), e.getValue());
                 }
@@ -511,7 +504,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean removeAll(Collection c) {
+            public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && c.contains(first)) {
                     first = first.next;
@@ -531,7 +524,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean retainAll(Collection c) {
+            public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
                 while(first != null && !c.contains(first)) {
                     first = first.next;
@@ -551,7 +544,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public boolean containsAll(Collection c) {
+            public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
                 while(entry != null) {
                     if (!c.contains(entry)) {
@@ -563,21 +556,17 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public <T> T[] toArray(T[] a) {
-                if (a == null) {
-                    throw new NullPointerException();
-                } else {
-                    @SuppressWarnings("unchecked")
-                    var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
-                    var entry = first;
-                    int index = 0;
-                    while (entry != null) {
-                        //noinspection unchecked
-                        array[index++] = (T) entry.key;
-                        entry = entry.next;
-                    }
-                    return array;
+            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+                @SuppressWarnings("unchecked")
+                var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
+                var entry = first;
+                int index = 0;
+                while (entry != null) {
+                    //noinspection unchecked
+                    array[index++] = (T) entry.key;
+                    entry = entry.next;
                 }
+                return array;
             }
         };
     }

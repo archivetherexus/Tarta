@@ -1,11 +1,6 @@
 package se.fikaware.tarta;
 
 import com.mongodb.MongoClient;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.RoutingHandler;
-
-import io.undertow.server.handlers.form.EagerFormParsingHandler;
-import se.fikaware.sync.IWriter;
 import se.fikaware.sync.Syncer;
 import se.fikaware.sync.json.JsonWriter;
 import se.fikaware.tarta.models.Post;
@@ -25,7 +20,7 @@ import java.util.List;
 public class App {
     public static void main(final String[] args) {
         var s = new Syncer();
-        var i = new IWriter() {
+        /*var i = new IWriter() {
             @Override
             public void writeNull() {
                 System.out.println("Null");
@@ -47,7 +42,7 @@ public class App {
             }
 
             @Override
-            public void writeArrayNext() throws IOException {
+            public void writeArrayNext() {
                 System.out.println("-------");
             }
 
@@ -75,7 +70,7 @@ public class App {
             public void writeMapEnd() {
                 System.out.println("}");
             }
-        };
+        };*/
         var arr1 = new LinkedList<Post>();
         arr1.add(new Post(new School(), "Title1", "Content1"));
         arr1.add(new Post(new School(), "Title2", "Content2"));
