@@ -57,6 +57,10 @@ public class Server {
             } catch(Throwable r) {
                 exchange.setStatusCode(500);
                 r.printStackTrace();
+            } finally {
+                if (!exchange.isComplete()) {
+                    logger.error("No response written for: " + exchange.getRequestURL());
+                }
             }
         });
         return this;

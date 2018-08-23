@@ -16,8 +16,15 @@ public class Response {
             syncer.write(new JsonWriter(outputStream), object);
             exchange.getResponseSender().send(outputStream.toString());
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/msgpack");
+            exchange.endExchange();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void ok(HttpServerExchange exchange) {
+        exchange.getResponseSender().send("{\"status\": \"OK\"}");
+        exchange.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/msgpack");
+        exchange.endExchange();
     }
 }

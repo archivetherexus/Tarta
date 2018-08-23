@@ -34,7 +34,7 @@ export default class Tabs extends Component<{
         const { tab } = this.state;
 
         return (
-            <div>
+            <div className="tabs-component">
                 <div className="tabs-component-upper">
                     {children.map((t, i) => {
                         return tab == i ? (

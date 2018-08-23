@@ -1,5 +1,6 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
+import { Link } from 'inferno-router';
 import { fetchHTTP } from '../../helpers/fetch_http';
 import Tabs from '../tabs/Tabs';
 import Tab from '../tabs/Tab';
@@ -32,7 +33,7 @@ class Admin extends Component<{
             
             fetchHTTP('http://localhost:3000/admin/school/create', {
                 name: schoolName,
-            }).then(() => this.context.router.history.push('/feed'));
+            }).then(() => this.fetchSchools()).catch(e => alert(e));
         }
     }
 
@@ -46,23 +47,26 @@ class Admin extends Component<{
         const { schools } = this.state;
 
         return (
-            <div className="sugar-panel">
+            <div>
                 <Tabs>
                     <Tab title="School">
                         <div>
                             {schools && schools.map(s => (
                                 <div>
-                                    {s.name}
+                                    <Link to={'/admin/school/' + s.name}>{s.name}</Link>
                                     <br />
                                 </div>
                             ))}
                         </div>
                         <br />
-                        <input ref={(r) => this.schoolNameRef = r} />
-                        <button onClick={this.handleNewSchoolSubmit}>{i18n('Create')}</button>
+                        <input className="sugar-input" ref={(r) => this.schoolNameRef = r} />
+                        <button className="sugar-button" onClick={this.handleNewSchoolSubmit}>{i18n('Create')}</button>
                     </Tab>
                     <Tab title="Test">
                         {'Test 2'}
+                    </Tab>
+                    <Tab title="Users">
+                        {'Delete user.'}
                     </Tab>
                 </Tabs>
             </div>

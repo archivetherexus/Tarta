@@ -7,10 +7,10 @@ import se.fikaware.web.Response;
 public class AdminPage {
 
     public static void schoolCreate(HttpServerExchange exchange) {
-
         var schoolName = exchange.getQueryParameters().get("name").getFirst();
         System.out.println("School Name: " + schoolName);
         School school = School.create(schoolName);
+        Response.ok(exchange);
     }
 
     public static void schoolList(HttpServerExchange exchange) {
