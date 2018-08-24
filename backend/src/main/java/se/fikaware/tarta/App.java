@@ -99,6 +99,8 @@ public class App {
                 .post("/posts/create", Handlers.withAdmin(PostsPage::create))
                 .get("/admin/school/create", AdminPage::schoolCreate)
                 .get("/admin/school/list", AdminPage::schoolList)
+                .get("/admin/user/create", AdminPage::userCreate)
+                .get("/admin/user/list", AdminPage::userList)
                 .start();
     }
 }

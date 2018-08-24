@@ -2,11 +2,17 @@ package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import se.fikaware.sync.Name;
+import se.fikaware.sync.Syncable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 
+@Syncable
 public class User {
     static public MongoCollection<Document> userCollection = null;
 
+    @Name("username")
     public String username;
 
     public String password;
@@ -26,10 +32,6 @@ public class User {
                 .append("is_admin", isAdmin);
     }
 
-    public void insert() {
-        userCollection.insertOne(toDocument());
-    }
-
     public void update() {
         userCollection.findOneAndUpdate(new Document().append("username", username), toDocument());
     }
@@ -46,5 +48,28 @@ public class User {
         user.password = data.getString("password");
         user.isAdmin = data.getBoolean("is_admin");
         return user;
+    }
+
+    public static Collection<User> getAll() {
+        var list = new ArrayList<User>();
+        var iterator = userCollection.find();
+
+        for (var entry: iterator) {
+            var user = new User();
+            user.username = entry.getString("username");
+            user.password = entry.getString("password");
+            user.isAdmin = entry.getBoolean("is_admin");
+            list.add(user);
+        }
+
+        return list;
+    }
+
+    public static void create(String username, String password) {
+        var user = new User();
+        user.username = username;
+        user.password = password;
+        user.isAdmin = false;
+        userCollection.insertOne(user.toDocument());
     }
 }

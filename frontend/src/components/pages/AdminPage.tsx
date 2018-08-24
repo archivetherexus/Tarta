@@ -9,42 +9,64 @@ class Admin extends Component<{
     i18n: (i: string) => string;
 }, {
     schools: [School] | null, 
+    users: [User] | null,
 }> {
     
     constructor() {
         super();
 
         this.state = {
-            schools: null
+            schools: null,
+            users: null,
         };
 
         this.fetchSchools();
+        this.fetchUsers();
     }
 
     fetchSchools() {
-        fetchHTTP<[School]>('http://localhost:3000/admin/school/list').then(list => this.setState({schools: list}));
+        fetchHTTP<[School]>('http://localhost:3000/admin/school/list').then(schools => this.setState({schools}));
+    }
+
+    fetchUsers() {
+        fetchHTTP<[User]>('http://localhost:3000/admin/user/list').then(users => this.setState({users}))
     }
 
     schoolNameRef: HTMLInputElement | null = null;
+    usernameRef: HTMLInputElement | null = null;
+    passwordRef: HTMLInputElement | null = null;
 
     onNewSchoolSubmit() {
         if (this.schoolNameRef != null) {
-            var schoolName = this.schoolNameRef.value;
+            let schoolName = this.schoolNameRef.value;
             
             fetchHTTP('http://localhost:3000/admin/school/create', {
                 name: schoolName,
-            }).then(() => this.fetchSchools()).catch(e => alert(e));
+            }).then(() => this.fetchSchools());
+        }
+    }
+
+    onNewUserSubmit() {
+        if (this.usernameRef != null && this.passwordRef != null) {
+            let username = this.usernameRef.value;
+            let password = this.passwordRef.value;
+
+            fetchHTTP('http://localhost:3000/admin/user/create', {
+                username,
+                password
+            }).then(() => this.fetchUsers());
         }
     }
 
     handleNewSchoolSubmit = this.onNewSchoolSubmit.bind(this);
+    handleNewUserSubmit = this.onNewUserSubmit.bind(this);
 
     render() {
         if (this.state === null) {
             return;
         }
         const { i18n } = this.props;
-        const { schools } = this.state;
+        const { schools, users } = this.state;
 
         return (
             <div>
@@ -66,7 +88,22 @@ class Admin extends Component<{
                         {'Test 2'}
                     </Tab>
                     <Tab title="Users">
-                        {'Delete user.'}
+                        <div>
+                            {users && users.map(user => (
+                                <div>
+                                    <Link to={'/admin/user/' + user.username}>{user.username}</Link>
+                                    <br />
+                                </div>
+                            ))}
+                        </div>
+                        <b>{i18n('Create a new user')}</b>
+                        <br />
+                        {i18n('Username')}
+                        <input className="sugar-input" ref={(r) => this.usernameRef = r} />
+                        <br />
+                        {i18n('Password')}
+                        <input className="sugar-input" ref={(r) => this.passwordRef = r} />
+                        <button className="sugar-button" onClick={this.handleNewUserSubmit}>{i18n('Create')}</button>
                     </Tab>
                 </Tabs>
             </div>

@@ -1,4 +1,5 @@
-import { Component, linkEvent, VNode } from 'inferno';
+import { Component, linkEvent, VNode, createComponentVNode, createVNode } from 'inferno';
+import { VNodeFlags } from 'inferno-vnode-flags';
 
 export default class Tabs extends Component<{
     children: JSX.Element[],
@@ -32,6 +33,11 @@ export default class Tabs extends Component<{
 
         const { children } = this.props;
         const { tab } = this.state;
+
+        // If possibly, attach a key to each child element... //
+        if (children[tab].props.children.forEach) {
+            children[tab].props.children.forEach((c: any, n: Number) => (typeof c === 'object') && (c.key = 'tab-' + tab + '-' + n));
+        }
 
         return (
             <div className="tabs-component">

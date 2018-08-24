@@ -30,6 +30,7 @@
 
 .tab-component.active {
     font-weight: bold;
+    background-color: var(--panel-background);
 }
 
 .tabs-component {

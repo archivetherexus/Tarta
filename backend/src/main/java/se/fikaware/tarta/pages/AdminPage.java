@@ -2,6 +2,7 @@ package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
 import se.fikaware.tarta.models.School;
+import se.fikaware.tarta.models.User;
 import se.fikaware.web.Response;
 
 public class AdminPage {
@@ -19,5 +20,17 @@ public class AdminPage {
             System.out.println("Name: " + school.schoolName);
         }
         Response.json(exchange, schools);
+    }
+
+    public static void userList(HttpServerExchange exchange) {
+        var users = User.getAll();
+        Response.json(exchange, users);
+    }
+
+    public static void userCreate(HttpServerExchange exchange) {
+        var username = exchange.getQueryParameters().get("username").getFirst();
+        var password = exchange.getQueryParameters().get("password").getFirst();
+        User.create(username, password);
+        Response.ok(exchange);
     }
 }

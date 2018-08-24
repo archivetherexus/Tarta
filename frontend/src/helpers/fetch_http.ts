@@ -43,8 +43,9 @@ export function fetchHTTP<T>(url: string, data?: {[index: string]: any}, options
             } else if (request.response) {
                 let data = JSON.parse(request.response);
                 console.log(data);
-                resolve(data);
+                resolve(<T>data);
             } else {
+                console.error('No response in request object for: ' + url);
                 reject('No response in request object!');
             }
         });
