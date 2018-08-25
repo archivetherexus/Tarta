@@ -11,6 +11,8 @@ import {
     JSONPlugin,
 } from 'fuse-box';
 
+import opn from 'opn';
+
 import transformInferno from 'ts-transform-inferno';
 import transformClasscat from 'ts-transform-classcat';
 
@@ -66,7 +68,8 @@ Sparky.task('production-env', () => (isProduction = true));
 
 Sparky.task('dev', ['clean', 'config'], () => {
     fuse.dev({
-        fallback: '/'
+        fallback: '/',
+        open: true,
     });
     app.hmr().watch();
     return fuse.run();

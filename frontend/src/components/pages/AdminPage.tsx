@@ -19,7 +19,9 @@ class Admin extends Component<{
             schools: null,
             users: null,
         };
+    }
 
+    componentDidMount() {
         this.fetchSchools();
         this.fetchUsers();
     }

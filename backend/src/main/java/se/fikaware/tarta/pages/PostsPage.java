@@ -10,13 +10,12 @@ import se.fikaware.web.Response;
 
 public class PostsPage {
 
-    public static void feedGet(HttpServerExchange exchange) {
-        School school = School.load("New School");
-        Response.json(exchange, Post.getAll(school));
+    public static void feedGet(User user, HttpServerExchange exchange) {
+        Response.json(exchange, Post.getAll(user.school[0]));
     }
 
     public static void create(User user, HttpServerExchange exchange) {
-        School school = School.load("New School");
+        School school = user.school[0];
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
         var title = Request.getString(form, "title", null);
         var content = Request.getString(form, "content", null);

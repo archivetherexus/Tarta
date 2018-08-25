@@ -8,13 +8,18 @@ class FeedPage extends Component<any, {
 }> {
     constructor() {
         super();
-        this.fetchFeed();
         this.state = {
             feed: null,
         };
     }
+
+    componentDidMount() {
+        this.fetchFeed();
+    }
+    
     fetchFeed() {
-        fetchHTTP<[Post]>('http://localhost:3000/posts/feed/get')
+        const sessionID = this.props.session;
+        fetchHTTP<[Post]>('http://localhost:3000/posts/feed/get', {sessionID})
         .then(feed => this.setState({feed}));
     }
     render() {
@@ -47,4 +52,5 @@ class FeedPage extends Component<any, {
 }
 
 export default connect((state:any) => ({
+    session: state.session,
 }))(FeedPage);

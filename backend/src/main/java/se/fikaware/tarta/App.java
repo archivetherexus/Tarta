@@ -95,7 +95,7 @@ public class App {
                 .get("/user/settings/get", UserPage::settingsGet)
                 .get("/user/settings/set", UserPage::settingsSet)
                 .get("/user/name", Handlers.withUser(UserPage::name))
-                .get("/posts/feed/get", PostsPage::feedGet)
+                .get("/posts/feed/get", Handlers.withUser(PostsPage::feedGet))
                 .post("/posts/create", Handlers.withAdmin(PostsPage::create))
                 .get("/admin/school/create", AdminPage::schoolCreate)
                 .get("/admin/school/list", AdminPage::schoolList)

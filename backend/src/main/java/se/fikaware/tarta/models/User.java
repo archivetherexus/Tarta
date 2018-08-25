@@ -19,10 +19,16 @@ public class User {
 
     public boolean isAdmin;
 
+    @Name("schools")
+    public School[] school = null;
+
     public User() {
         this.username = "";
         this.password = "";
         this.isAdmin = false;
+        school = new School[]{
+                School.load("New School"),
+        };
     }
 
     private Document toDocument() {
