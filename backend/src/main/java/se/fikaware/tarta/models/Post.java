@@ -34,14 +34,14 @@ public class Post {
     }
 
     private Document toDocument() {
-        return new Document("school", school.reference)
+        return new Document("school_id", school.reference)
                 .append("title", title)
                 .append("content", content);
     }
 
     public static Collection<Post> getAll(School school) {
         var list = new ArrayList<Post>();
-        var iterator = postCollection.find(new Document().append("school", school.reference));
+        var iterator = postCollection.find(new Document().append("school_id", school.reference));
 
         for (var entry: iterator) {
             var title = entry.getString("title");

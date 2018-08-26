@@ -27,10 +27,10 @@ public class AdminPage {
         Response.json(exchange, users);
     }
 
-    public static void userCreate(HttpServerExchange exchange) {
+    public static void userCreate(User user, HttpServerExchange exchange) {
         var username = exchange.getQueryParameters().get("username").getFirst();
         var password = exchange.getQueryParameters().get("password").getFirst();
-        User.create(username, password);
+        User.create(username, password, user.school[0]);
         Response.ok(exchange);
     }
 }

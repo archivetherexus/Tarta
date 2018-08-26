@@ -7,6 +7,7 @@ import Tab from '../tabs/Tab';
 
 class Admin extends Component<{
     i18n: (i: string) => string;
+    session: string,
 }, {
     schools: [School] | null, 
     users: [User] | null,
@@ -49,13 +50,15 @@ class Admin extends Component<{
     }
 
     onNewUserSubmit() {
+        let { session } = this.props;
         if (this.usernameRef != null && this.passwordRef != null) {
             let username = this.usernameRef.value;
             let password = this.passwordRef.value;
 
             fetchHTTP('http://localhost:3000/admin/user/create', {
                 username,
-                password
+                password,
+                sessionID: session
             }).then(() => this.fetchUsers());
         }
     }
@@ -115,4 +118,5 @@ class Admin extends Component<{
 
 export default connect((state:any) => ({
     i18n: state.i18n,
+    session: state.session,
 }))(Admin);

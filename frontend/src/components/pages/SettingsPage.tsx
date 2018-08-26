@@ -1,5 +1,6 @@
 import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
+import { Link } from 'inferno-router';
 
 class SettingsPage extends Component<any, any> {
 
@@ -28,6 +29,8 @@ class SettingsPage extends Component<any, any> {
                     <option value="english">{'English'}</option>
                     <option value="swedish">{'Svenska'}</option>
                 </select>
+                <br />
+                <Link to="/admin">{i18n('Go to Admin panel!')}</Link>
             </div>
         )
     }

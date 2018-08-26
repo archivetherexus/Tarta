@@ -2,11 +2,15 @@ package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Syncable
 public class User {
@@ -20,21 +24,20 @@ public class User {
     public boolean isAdmin;
 
     @Name("schools")
-    public School[] school = null;
+    public School[] school;
 
     public User() {
         this.username = "";
         this.password = "";
         this.isAdmin = false;
-        school = new School[]{
-                School.load("New School"),
-        };
+        school = new School[]{};
     }
 
     private Document toDocument() {
         return new Document()
                 .append("username", username)
                 .append("password", password)
+                .append("school_ids", Arrays.stream(school).map(s -> s.reference).collect(Collectors.toList()))
                 .append("is_admin", isAdmin);
     }
 
@@ -53,6 +56,7 @@ public class User {
         user.username = username;
         user.password = data.getString("password");
         user.isAdmin = data.getBoolean("is_admin");
+        user.school = data.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
         return user;
     }
 
@@ -65,17 +69,19 @@ public class User {
             user.username = entry.getString("username");
             user.password = entry.getString("password");
             user.isAdmin = entry.getBoolean("is_admin");
+            user.school = entry.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
             list.add(user);
         }
 
         return list;
     }
 
-    public static void create(String username, String password) {
+    public static void create(String username, String password, School school) {
         var user = new User();
         user.username = username;
         user.password = password;
         user.isAdmin = false;
+        user.school = new School[]{school};
         userCollection.insertOne(user.toDocument());
     }
 }

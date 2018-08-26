@@ -37,6 +37,11 @@ public class School {
         return new School(name, school.getObjectId("_id"));
     }
 
+    public static School load(ObjectId id) {
+        var school = schoolCollection.find(new Document().append("_id", id)).first();
+        return new School(school.getString("name"), id);
+    }
+
     public static Collection<School> getAll() {
         var list = new ArrayList<School>();
         var iterator = schoolCollection.find();

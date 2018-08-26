@@ -33,7 +33,7 @@ public class Syncer {
         for (Class<?> classObject : ref.getTypesAnnotatedWith(Syncable.class)) {
             var parsedFields = new LinkedList<ParsedField>();
 
-            var cl = classObject;
+            Class cl = classObject;
             while(cl != null) {
                 var fields = cl.getDeclaredFields();
                 for (var field : fields) {
@@ -107,7 +107,7 @@ public class Syncer {
         if (o == null) {
             i.writeNull();
         } else {
-            var classObject = o.getClass();
+            Class classObject = o.getClass();
             if (classObject != null) {
                 if (classObject.isArray()) {
                     int length = Array.getLength(o) - 1;
@@ -120,31 +120,33 @@ public class Syncer {
                         write(i, Array.get(o, length));
                     }
                     i.writeArrayEnd();
-                }
-                do {
-                    var objectSyncer = objectSyncers.get(classObject);
-                    if (objectSyncer != null) {
-                        try {
-                            objectSyncer.write(o, i);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                        return;
-                    } else {
-                        var interfaces = classObject.getInterfaces();
-                        boolean foundInterface = false;
-                        for (var interfaceClass : interfaces) {
-                            if (objectSyncers.containsKey(interfaceClass)) {
-                                classObject = interfaceClass;
-                                foundInterface = true;
-                                break;
+                    return;
+                } else {
+                    do {
+                        var objectSyncer = objectSyncers.get(classObject);
+                        if (objectSyncer != null) {
+                            try {
+                                objectSyncer.write(o, i);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        } else {
+                            var interfaces = classObject.getInterfaces();
+                            boolean foundInterface = false;
+                            for (var interfaceClass : interfaces) {
+                                if (objectSyncers.containsKey(interfaceClass)) {
+                                    classObject = interfaceClass;
+                                    foundInterface = true;
+                                    break;
+                                }
+                            }
+                            if (!foundInterface) {
+                                classObject = classObject.getSuperclass();
                             }
                         }
-                        if (!foundInterface) {
-                            classObject = classObject.getSuperclass();
-                        }
-                    }
-                } while(classObject != null);
+                    } while (classObject != null);
+                }
             }
             System.err.println("Unknown syncer for: " + o.getClass().getName());
         }
