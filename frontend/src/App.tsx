@@ -21,6 +21,7 @@ import AdminPage from './components/pages/AdminPage';
 import Footer from './components/Footer';
 import PrivacyPolicyPage from './components/pages/PrivacyPolicyPage';
 import AboutUsPage from './components/pages/AboutUsPage';
+import AdminSchoolPage from './components/pages/admin/AdminSchoolPage';
 
 function renderSubpage(component: any, props: any = {}) {
     return () => (
@@ -40,7 +41,8 @@ render(
             <div className="app-upper-content">
                 <Route path="/login" render={renderSubpage(LoginPage)} />
                 <Route path="/feed" render={renderSubpage(FeedPage)} />
-                <Route path="/admin" render={renderSubpage(AdminPage)} />
+                <Route exact path="/admin" render={renderSubpage(AdminPage)} />
+                <Route path="/admin/school/:slugName" render={renderSubpage(AdminSchoolPage)} />
                 <Route path="/settings" render={renderSubpage(SettingsPage)} />
                 <Route path="/create" render={renderSubpage(CreatePostPage)} />
                 <Route path="/privacy_policy" render={renderSubpage(PrivacyPolicyPage)} />

@@ -22,6 +22,8 @@
     margin: 5px;
     padding: 4px 10px 4px 10px;
     vertical-align: middle;
+    color: var(--site-text-color);
+    text-decoration-line: none;
 
     /* Correct box size. */
     box-sizing: border-box;

@@ -3,6 +3,7 @@ package se.fikaware.tarta.pages;
 import io.undertow.server.HttpServerExchange;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
+import se.fikaware.web.BadRequest;
 import se.fikaware.web.Response;
 
 public class AdminPage {
@@ -31,6 +32,23 @@ public class AdminPage {
         var username = exchange.getQueryParameters().get("username").getFirst();
         var password = exchange.getQueryParameters().get("password").getFirst();
         User.create(username, password, user.school[0]);
+        Response.ok(exchange);
+    }
+
+    public static void schoolGet(User user, HttpServerExchange exchange) {
+        var school = School.load(exchange.getQueryParameters().get("slugName").getFirst());
+        if (school == null) {
+            throw new BadRequest("Please provide the 'schoolName!'");
+        }
+        Response.json(exchange, school);
+    }
+
+    public static void schoolDelete(User user, HttpServerExchange exchange) {
+        var school = School.load(exchange.getQueryParameters().get("slugName").getFirst());
+        if (school == null) {
+            throw new BadRequest("Please provide the 'schoolName!'");
+        }
+        school.delete();
         Response.ok(exchange);
     }
 }

@@ -23,8 +23,15 @@ class Admin extends Component<{
     }
 
     componentDidMount() {
-        this.fetchSchools();
         this.fetchUsers();
+    }
+
+    componentDidUpdate() {
+        if (this.state != null) {
+            if (this.state.schools == null) {
+                this.fetchSchools();
+            }
+        }
     }
 
     fetchSchools() {
@@ -80,7 +87,7 @@ class Admin extends Component<{
                         <div>
                             {schools && schools.map(s => (
                                 <div>
-                                    <Link to={'/admin/school/' + s.name}>{s.name}</Link>
+                                    <Link to={'/admin/school/' + s.slugName}>{s.name}</Link>
                                     <br />
                                 </div>
                             ))}

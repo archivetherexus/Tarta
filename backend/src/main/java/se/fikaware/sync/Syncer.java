@@ -7,14 +7,11 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @EverythingIsNonnullByDefault
 public class Syncer {
-    private interface IObjectSyncer {
-        void write(Object o, IWriter i)  throws IOException, IllegalAccessException;
-    }
-
     private static class ParsedField {
         private final String name;
         private final Field field;
@@ -31,36 +28,48 @@ public class Syncer {
         objectSyncers = new HashMap<>();
         Reflections ref = new Reflections("se.fikaware");
         for (Class<?> classObject : ref.getTypesAnnotatedWith(Syncable.class)) {
-            var parsedFields = new LinkedList<ParsedField>();
 
-            Class cl = classObject;
-            while(cl != null) {
-                var fields = cl.getDeclaredFields();
-                for (var field : fields) {
-                    var nameAnnotation = field.getAnnotation(Name.class);
-                    if (nameAnnotation != null) {
-                        parsedFields.push(new ParsedField(nameAnnotation.value(), field));
-                    }
+            var syncer = classObject.getAnnotation(Syncable.class).syncer();
+
+            if (syncer != UnsetObjectSyncer.class) {
+                try {
+                    objectSyncers.put(classObject, syncer.getConstructor().newInstance());
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
                 }
-                cl = cl.getSuperclass();
-            }
+            } else {
 
-            objectSyncers.put(classObject, (o, i) -> {
-                i.writeMapBegin();
-                var iterator = parsedFields.iterator();
-                if (iterator.hasNext()) {
-                    var parsedField = iterator.next();
-                    i.writeMapKey(parsedField.name);
-                    write(i, parsedField.field.get(o));
-                    while(iterator.hasNext()) {
-                        i.writeMapNext();
-                        parsedField = iterator.next();
+                var parsedFields = new LinkedList<ParsedField>();
+
+                Class cl = classObject;
+                while (cl != null) {
+                    var fields = cl.getDeclaredFields();
+                    for (var field : fields) {
+                        var nameAnnotation = field.getAnnotation(Name.class);
+                        if (nameAnnotation != null) {
+                            parsedFields.push(new ParsedField(nameAnnotation.value(), field));
+                        }
+                    }
+                    cl = cl.getSuperclass();
+                }
+
+                objectSyncers.put(classObject, (o, i) -> {
+                    i.writeMapBegin();
+                    var iterator = parsedFields.iterator();
+                    if (iterator.hasNext()) {
+                        var parsedField = iterator.next();
                         i.writeMapKey(parsedField.name);
                         write(i, parsedField.field.get(o));
+                        while (iterator.hasNext()) {
+                            i.writeMapNext();
+                            parsedField = iterator.next();
+                            i.writeMapKey(parsedField.name);
+                            write(i, parsedField.field.get(o));
+                        }
                     }
-                }
-                i.writeMapEnd();
-            });
+                    i.writeMapEnd();
+                });
+            }
         }
         installPrimitives();
     }

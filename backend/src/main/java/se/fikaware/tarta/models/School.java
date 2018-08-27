@@ -3,43 +3,46 @@ package se.fikaware.tarta.models;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
+import se.fikaware.tarta.models.syncers.SchoolSyncer;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Syncable
+@Syncable(syncer = SchoolSyncer.class)
 public class School {
     public static MongoCollection<Document> schoolCollection = null;
 
-    @Name("name")
     public final String schoolName;
+
+    public final String slugName;
 
     public final ObjectId reference;
 
     public School() {
         schoolName = "";
+        slugName = "";
         reference = null;
     }
 
-    public School(String schoolName, ObjectId reference) {
+    public School(String slugName, String schoolName, ObjectId reference) {
+        this.slugName = slugName;
         this.schoolName = schoolName;
         this.reference = reference;
     }
 
     private Document toDocument() {
-        return new Document("name", schoolName);
+        return new Document("name", schoolName).append("slug_name", slugName);
     }
 
-    public static School load(String name) {
-        var school = schoolCollection.find(new Document().append("name", name)).first();
-        return new School(name, school.getObjectId("_id"));
+    public static School load(String slugName) {
+        var school = schoolCollection.find(new Document().append("slug_name", slugName)).first();
+        return new School(slugName, school.getString("name"), school.getObjectId("_id"));
     }
 
     public static School load(ObjectId id) {
         var school = schoolCollection.find(new Document().append("_id", id)).first();
-        return new School(school.getString("name"), id);
+        return new School(school.getString("slug_name"), school.getString("name"), id);
     }
 
     public static Collection<School> getAll() {
@@ -48,16 +51,25 @@ public class School {
 
         for (var entry: iterator) {
             var name = entry.getString("name");
+            var slugName = entry.getString("slug_name");
             var id = entry.getObjectId("_id");
-            list.add(new School(name, id));
+            list.add(new School(slugName, name, id));
         }
 
         return list;
     }
 
+    private static String createSlug(String schoolName) {
+        return schoolName.replace(' ', '_').toLowerCase();
+    }
+
     public static School create(String schoolName) {
-        School school = new School(schoolName, new ObjectId());
+        School school = new School(createSlug(schoolName), schoolName, new ObjectId());
         schoolCollection.insertOne(school.toDocument().append("_id", school.reference));
         return school;
+    }
+
+    public void delete() {
+        schoolCollection.deleteOne(new Document("_id", this.reference));
     }
 }
