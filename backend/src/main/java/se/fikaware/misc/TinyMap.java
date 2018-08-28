@@ -140,7 +140,7 @@ public class TinyMap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(@Nonnull Map<? extends K, ? extends V> m) {
-        for (var entry : m.entrySet()) {
+        for (var entry: m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
@@ -491,7 +491,7 @@ public class TinyMap<K, V> implements Map<K, V> {
 
             @Override
             public boolean addAll(@Nonnull Collection<? extends Entry<K, V>> c) {
-                for (var e : c) {
+                for (var e: c) {
                     TinyMap.this.put(e.getKey(), e.getValue());
                 }
                 return true;

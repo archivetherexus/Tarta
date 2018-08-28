@@ -1,6 +1,7 @@
 package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import se.fikaware.sync.Name;
@@ -23,6 +24,8 @@ public class User {
 
     public boolean isAdmin;
 
+    public ObjectId id;
+
     @Name("schools")
     public School[] school;
 
@@ -34,29 +37,41 @@ public class User {
     }
 
     private Document toDocument() {
-        return new Document()
-                .append("username", username)
+        return new Document("username", username)
                 .append("password", password)
                 .append("school_ids", Arrays.stream(school).map(s -> s.reference).collect(Collectors.toList()))
                 .append("is_admin", isAdmin);
     }
 
     public void update() {
-        userCollection.findOneAndUpdate(new Document().append("username", username), toDocument());
+        userCollection.findOneAndUpdate(new Document("username", username), toDocument());
     }
 
     public static boolean exists(String username) {
-        var user = userCollection.find(new Document().append("username", username));
+        var user = userCollection.find(new Document("username", username));
         return user.iterator().hasNext();
     }
 
     public static User load(String username) {
         var user = new User();
-        var data = userCollection.find(new Document().append("username", username)).first();
+        var entry = userCollection.find(new Document("username", username)).first();
         user.username = username;
-        user.password = data.getString("password");
-        user.isAdmin = data.getBoolean("is_admin");
-        user.school = data.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
+        user.password = entry.getString("password");
+        user.isAdmin  = entry.getBoolean("is_admin");
+        user.id       = entry.getObjectId("_id");
+        user.school   = entry.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
+        return user;
+    }
+
+    public static User load(ObjectId id) {
+        var user = new User();
+        var entry = userCollection.find(Filters.eq("_id", id)).first();
+        user.username = entry.getString("username");
+        user.password = entry.getString("password");
+        user.isAdmin  = entry.getBoolean("is_admin");
+        user.id       = id;
+        user.school   = entry.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
+
         return user;
     }
 
@@ -68,20 +83,24 @@ public class User {
             var user = new User();
             user.username = entry.getString("username");
             user.password = entry.getString("password");
-            user.isAdmin = entry.getBoolean("is_admin");
-            user.school = entry.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
+            user.isAdmin  = entry.getBoolean("is_admin");
+            user.id       = entry.getObjectId("_id");
+            user.school   = entry.get("school_ids", new ArrayList<ObjectId>()).stream().map(School::load).toArray(School[]::new);
             list.add(user);
         }
 
         return list;
     }
 
-    public static void create(String username, String password, School school) {
+    public static User create(String username, String password, School school) {
         var user = new User();
         user.username = username;
         user.password = password;
         user.isAdmin = false;
         user.school = new School[]{school};
-        userCollection.insertOne(user.toDocument());
+        user.id = new ObjectId();
+        Group.load(school.slugName).addUser(user);
+        userCollection.insertOne(user.toDocument().append("_id", user.id));
+        return user;
     }
 }

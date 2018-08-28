@@ -90,9 +90,9 @@ class LoginPage extends Component<any, any> {
                     {i18n('Login to Tarta')}
                 </div>
                 <br />
-                <input className="sugar-input sugar-shadow form-size" placeholder="Username" ref={(u) => this.usernameRef = u} type="text" />
+                <input className="sugar-input sugar-shadow form-size" placeholder="Username" ref={u => this.usernameRef = u} type="text" />
                 <br />
-                <input className="sugar-input sugar-shadow form-size" placeholder="Password" ref={(p) => this.passwordRef = p} type="password" />
+                <input className="sugar-input sugar-shadow form-size" placeholder="Password" ref={p => this.passwordRef = p} type="password" />
                 <br />
                 <button className="sugar-button form-size sugar-bold" onClick={this.handleLoginClick}>{i18n('Login')}</button>
             </div>

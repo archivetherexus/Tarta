@@ -21,7 +21,7 @@ class Navbar extends Component<any, any> {
     render() {
         const { i18n, location } = this.props;
         return this.shouldRender(location.pathname) && (
-            <div className="navbar" ref={(n) => this.navbarRef = n}>   
+            <div className="navbar" ref={n => this.navbarRef = n}>   
                 <div className="navbar-container">
                     <NavLink activeClassName="active" exact to="/feed">{'Feed'}</NavLink>
                     <NavLink activeClassName="active" exact to="/settings">{i18n('Settings')}</NavLink>

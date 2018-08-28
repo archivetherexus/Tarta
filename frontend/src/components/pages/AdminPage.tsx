@@ -93,7 +93,7 @@ class Admin extends Component<{
                             ))}
                         </div>
                         <br />
-                        <input className="sugar-input" ref={(r) => this.schoolNameRef = r} />
+                        <input className="sugar-input" ref={r => this.schoolNameRef = r} />
                         <button className="sugar-button" onClick={this.handleNewSchoolSubmit}>{i18n('Create')}</button>
                     </Tab>
                     <Tab title="Test">
@@ -111,10 +111,10 @@ class Admin extends Component<{
                         <b>{i18n('Create a new user')}</b>
                         <br />
                         {i18n('Username')}
-                        <input className="sugar-input" ref={(r) => this.usernameRef = r} />
+                        <input className="sugar-input" ref={r => this.usernameRef = r} />
                         <br />
                         {i18n('Password')}
-                        <input className="sugar-input" ref={(r) => this.passwordRef = r} />
+                        <input className="sugar-input" ref={r => this.passwordRef = r} />
                         <button className="sugar-button" onClick={this.handleNewUserSubmit}>{i18n('Create')}</button>
                     </Tab>
                 </Tabs>

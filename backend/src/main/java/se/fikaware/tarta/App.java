@@ -6,6 +6,7 @@ import se.fikaware.sync.json.JsonWriter;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.pages.AdminPage;
+import se.fikaware.tarta.pages.GroupPage;
 import se.fikaware.tarta.pages.PostsPage;
 import se.fikaware.tarta.pages.UserPage;
 import se.fikaware.web.Handlers;
@@ -72,8 +73,8 @@ public class App {
             }
         };*/
         var arr1 = new LinkedList<Post>();
-        arr1.add(new Post(new School(), "Title1", "Content1"));
-        arr1.add(new Post(new School(), "Title2", "Content2"));
+        arr1.add(new Post(new School(), "Title1", "Content1", null));
+        arr1.add(new Post(new School(), "Title2", "Content2", null));
         arr1.add(null);
         try {
             //s.write(i, arr1);
@@ -101,8 +102,11 @@ public class App {
                 .get("/admin/school/list", AdminPage::schoolList)
                 .get("/admin/school/get", Handlers.withAdmin(AdminPage::schoolGet))
                 .get("/admin/school/delete", Handlers.withAdmin(AdminPage::schoolDelete))
+                .get("/admin/school/group/list", Handlers.withAdmin(AdminPage::schoolGroupList))
+                .get("/admin/school/group/create", Handlers.withAdmin(AdminPage::schoolGroupCreate))
                 .get("/admin/user/create", Handlers.withAdmin(AdminPage::userCreate))
                 .get("/admin/user/list", AdminPage::userList)
+                .get("/group/list/get", Handlers.withUser(GroupPage::listGet))
                 .start();
     }
 }

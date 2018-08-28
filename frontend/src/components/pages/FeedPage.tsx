@@ -38,6 +38,8 @@ class FeedPage extends Component<any, {
                             <div>
                                 <h3>{post.title}</h3>
                                 {post.content}
+                                <br />
+                                {'Recipient: ' + post.recipient.name}
                                 <hr />
                             </div>
                         ))

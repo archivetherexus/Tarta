@@ -1,6 +1,7 @@
 package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import se.fikaware.sync.Syncable;
@@ -36,12 +37,12 @@ public class School {
     }
 
     public static School load(String slugName) {
-        var school = schoolCollection.find(new Document().append("slug_name", slugName)).first();
+        var school = schoolCollection.find(new Document("slug_name", slugName)).first();
         return new School(slugName, school.getString("name"), school.getObjectId("_id"));
     }
 
     public static School load(ObjectId id) {
-        var school = schoolCollection.find(new Document().append("_id", id)).first();
+        var school = schoolCollection.find(Filters.eq("_id", id)).first();
         return new School(school.getString("slug_name"), school.getString("name"), id);
     }
 
@@ -66,10 +67,11 @@ public class School {
     public static School create(String schoolName) {
         School school = new School(createSlug(schoolName), schoolName, new ObjectId());
         schoolCollection.insertOne(school.toDocument().append("_id", school.reference));
+        Group.create(school, schoolName);
         return school;
     }
 
     public void delete() {
-        schoolCollection.deleteOne(new Document("_id", this.reference));
+        schoolCollection.deleteOne(Filters.eq("_id", this.reference));
     }
 }

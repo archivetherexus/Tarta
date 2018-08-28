@@ -44,7 +44,7 @@ public class Syncer {
                 Class cl = classObject;
                 while (cl != null) {
                     var fields = cl.getDeclaredFields();
-                    for (var field : fields) {
+                    for (var field: fields) {
                         var nameAnnotation = field.getAnnotation(Name.class);
                         if (nameAnnotation != null) {
                             parsedFields.push(new ParsedField(nameAnnotation.value(), field));
@@ -143,7 +143,7 @@ public class Syncer {
                         } else {
                             var interfaces = classObject.getInterfaces();
                             boolean foundInterface = false;
-                            for (var interfaceClass : interfaces) {
+                            for (var interfaceClass: interfaces) {
                                 if (objectSyncers.containsKey(interfaceClass)) {
                                     classObject = interfaceClass;
                                     foundInterface = true;

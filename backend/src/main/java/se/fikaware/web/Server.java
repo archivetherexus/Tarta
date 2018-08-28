@@ -9,6 +9,7 @@ import io.undertow.util.HttpString;
 
 import org.slf4j.LoggerFactory;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
+import se.fikaware.tarta.models.Group;
 import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
@@ -106,6 +107,7 @@ public class Server {
         School.schoolCollection = database.getCollection("schools");
         Post.postCollection = database.getCollection("posts");
         User.userCollection = database.getCollection("users");
+        Group.groupCollection = database.getCollection("groups");
     }
 }
 /*
