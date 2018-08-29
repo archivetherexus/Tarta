@@ -1,7 +1,9 @@
 package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
+import org.bson.Document;
 import se.fikaware.tarta.models.Group;
+import se.fikaware.tarta.models.Post;
 import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
 import se.fikaware.web.BadRequest;
@@ -68,6 +70,21 @@ public class AdminPage {
         }
         var groupName = exchange.getQueryParameters().get("groupName").getFirst();
         Group.create(school, groupName);
+        Response.ok(exchange);
+    }
+
+    public static void reset(User user, HttpServerExchange exchange) {
+        var all = new Document();
+        Post.postCollection.deleteMany(all);
+        School.schoolCollection.deleteMany(all);
+        User.userCollection.deleteMany(all);
+        Group.groupCollection.deleteMany(all);
+
+        var school = School.create("Test School");
+        var a = User.create("a", "a", school);
+        a.isAdmin = true;
+        a.update();
+
         Response.ok(exchange);
     }
 }

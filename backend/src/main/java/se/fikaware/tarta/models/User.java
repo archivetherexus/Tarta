@@ -44,17 +44,17 @@ public class User {
     }
 
     public void update() {
-        userCollection.findOneAndUpdate(new Document("username", username), toDocument());
+        userCollection.replaceOne(Filters.eq("username", username), toDocument());
     }
 
     public static boolean exists(String username) {
-        var user = userCollection.find(new Document("username", username));
+        var user = userCollection.find(Filters.eq("username", username));
         return user.iterator().hasNext();
     }
 
     public static User load(String username) {
         var user = new User();
-        var entry = userCollection.find(new Document("username", username)).first();
+        var entry = userCollection.find(Filters.eq("username", username)).first();
         user.username = username;
         user.password = entry.getString("password");
         user.isAdmin  = entry.getBoolean("is_admin");

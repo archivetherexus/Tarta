@@ -2,6 +2,7 @@ package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import se.fikaware.sync.Name;
@@ -57,7 +58,7 @@ public class Group {
     }
 
     public static Group load(String recipientSlugName) {
-        var entry = groupCollection.find(new Document("slug_name", recipientSlugName)).first();
+        var entry = groupCollection.find(Filters.eq("slug_name", recipientSlugName)).first();
         return new Group(School.load(entry.getObjectId("school_id")),
                 recipientSlugName,
                 entry.getString("name"),
@@ -109,5 +110,11 @@ public class Group {
         members = Arrays.copyOf(members, members.length + 1);
         members[members.length - 1] = user;
         groupCollection.updateOne(Filters.eq("_id", id), Updates.addToSet("members", user.id));
+    }
+
+    public static void deleteFrom(School from) {
+        var filter = Filters.eq("school_id", from.reference);
+        Post.postCollection.deleteMany(Filters.in("recipient", groupCollection.find(filter).map(s -> s.getObjectId("_id")).into(new ArrayList<>())));
+        groupCollection.deleteMany(filter);
     }
 }

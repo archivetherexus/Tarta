@@ -107,6 +107,7 @@ public class App {
                 .get("/admin/user/create", Handlers.withAdmin(AdminPage::userCreate))
                 .get("/admin/user/list", AdminPage::userList)
                 .get("/group/list/get", Handlers.withUser(GroupPage::listGet))
+                .get("/reset", Handlers.withAdmin(AdminPage::reset))
                 .start();
     }
 }

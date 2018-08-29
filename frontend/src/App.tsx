@@ -22,6 +22,7 @@ import Footer from './components/Footer';
 import PrivacyPolicyPage from './components/pages/PrivacyPolicyPage';
 import AboutUsPage from './components/pages/AboutUsPage';
 import AdminSchoolPage from './components/pages/admin/AdminSchoolPage';
+import ResetPage from './components/pages/ResetPage';
 
 function renderSubpage(component: any, props: any = {}) {
     return () => (
@@ -47,6 +48,7 @@ render(
                 <Route path="/create" render={renderSubpage(CreatePostPage)} />
                 <Route path="/privacy_policy" render={renderSubpage(PrivacyPolicyPage)} />
                 <Route path="/about_us" render={renderSubpage(AboutUsPage)} />
+                <Route path="/reset" render={renderSubpage(ResetPage)} />
                 <Route exact path="/" render={renderSubpage(LandingPage)} />  
             </div>
         </BrowserRouter>
