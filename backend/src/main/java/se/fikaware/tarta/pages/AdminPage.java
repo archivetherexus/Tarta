@@ -2,10 +2,7 @@ package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
 import org.bson.Document;
-import se.fikaware.tarta.models.Group;
-import se.fikaware.tarta.models.Post;
-import se.fikaware.tarta.models.School;
-import se.fikaware.tarta.models.User;
+import se.fikaware.tarta.models.*;
 import se.fikaware.web.BadRequest;
 import se.fikaware.web.Response;
 
@@ -73,6 +70,16 @@ public class AdminPage {
         Response.ok(exchange);
     }
 
+    public static void schoolCourseCreate(User user, HttpServerExchange exchange) {
+        var school = School.load(exchange.getQueryParameters().get("slugName").getFirst());
+        if (school == null) {
+            throw new BadRequest("No school exists with that slug name!\"");
+        }
+        var courseName = exchange.getQueryParameters().get("courseName").getFirst();
+        school.addCourse(courseName);
+        Response.ok(exchange);
+    }
+
     public static void reset(User user, HttpServerExchange exchange) {
         var all = new Document();
         Post.postCollection.deleteMany(all);
@@ -86,5 +93,14 @@ public class AdminPage {
         a.update();
 
         Response.ok(exchange);
+    }
+
+
+    public static void schoolCourseList(User user, HttpServerExchange exchange) {
+        var school = School.load(exchange.getQueryParameters().get("slugName").getFirst());
+        if (school == null) {
+            throw new BadRequest("No school exists with that slug name!\"");
+        }
+        Response.json(exchange, Course.getAll(school));
     }
 }

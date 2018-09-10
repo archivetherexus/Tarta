@@ -8,6 +8,7 @@ import { fetchHTTP } from '../../../helpers/fetch_http';
 class AdminSchoolPage extends Component<any, {
     school: School | null,
     groups: [Group] | null,
+    courses: [Course] | null,
 }> {
     constructor() {
         super()
@@ -15,12 +16,14 @@ class AdminSchoolPage extends Component<any, {
         this.state = {
             school: null,
             groups: null,
+            courses: null,
         }
     }
 
     componentDidMount() {
         this.fetchSchool();
         this.fetchGroup();
+        this.fetchCourses();
     }
 
     fetchSchool() {
@@ -43,6 +46,16 @@ class AdminSchoolPage extends Component<any, {
         }).then(groups => this.setState({groups}));
     }
 
+    fetchCourses() {
+        if (!this.state) {
+            return;
+        }
+        fetchHTTP<[Course]>('http://localhost:3000/admin/school/course/list', {
+            sessionID: this.props.session,
+            slugName: this.context.router.route.match.params.slugName
+        }).then(courses => this.setState({courses}));
+    }
+
     groupNameRef: HTMLInputElement | null = null;
 
     onDeleteSchool() {
@@ -55,6 +68,8 @@ class AdminSchoolPage extends Component<any, {
         }).then(() => this.context.router.history.push('/admin'))
     }
 
+    courseNameRef: HTMLInputElement | null = null;
+
     onCreateGroup() {
         if (!this.state || !this.state.school || !this.groupNameRef) {
             return;
@@ -66,15 +81,27 @@ class AdminSchoolPage extends Component<any, {
         }).then(() => this.fetchGroup());
     }
 
+    onCreateCourse() {
+        if (!this.state || !this.state.school || !this.courseNameRef) {
+            return;
+        }
+        fetchHTTP('http://localhost:3000/admin/school/course/create', {
+            sessionID: this.props.session,
+            courseName: this.courseNameRef.value,
+            slugName: this.state.school.slugName,
+        }).then(() => this.fetchCourses());
+    }
+
     handleDeleteSchool = this.onDeleteSchool.bind(this);
     handleCreateGroup = this.onCreateGroup.bind(this);
+    handleCreateCourse = this.onCreateCourse.bind(this);
 
     render() {
         if (!this.state) {
             return;
         }
         const { i18n } = this.props;
-        const { school, groups} = this.state;
+        const { school, groups, courses } = this.state;
         return school ? (
             <div className="sugar-panel">
                 <u>{school.name}</u>
@@ -99,6 +126,25 @@ class AdminSchoolPage extends Component<any, {
                     </div>
                     <input className="sugar-input" ref={e => this.groupNameRef = e} />
                     <button className="sugar-button" onClick={this.handleCreateGroup}>{i18n('Add Group')}</button>
+                </div>
+                <br />
+                <br />
+                <div className="sugar-border">
+                    <b>{i18n('Courses')}</b>
+                    <div>
+                        {courses ? (
+                            courses.map(course => (
+                                <div>
+                                    {course.courseName}
+                                    <br />
+                                </div>
+                            ))
+                        ) : (
+                            'Loading...'
+                        )}
+                    </div>
+                    <input className="sugar-input" ref={e => this.courseNameRef = e} />
+                    <button className="sugar-button" onClick={this.handleCreateCourse}>{i18n('Add Course')}</button>
                 </div>
                 <br />
                 <button className="sugar-button" onClick={this.handleDeleteSchool}>{i18n('Delete')}</button>

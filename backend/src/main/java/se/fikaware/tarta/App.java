@@ -104,6 +104,8 @@ public class App {
                 .get("/admin/school/delete", Handlers.withAdmin(AdminPage::schoolDelete))
                 .get("/admin/school/group/list", Handlers.withAdmin(AdminPage::schoolGroupList))
                 .get("/admin/school/group/create", Handlers.withAdmin(AdminPage::schoolGroupCreate))
+                .get("/admin/school/course/create", Handlers.withAdmin(AdminPage::schoolCourseCreate))
+                .get("/admin/school/course/list", Handlers.withAdmin(AdminPage::schoolCourseList))
                 .get("/admin/user/create", Handlers.withAdmin(AdminPage::userCreate))
                 .get("/admin/user/list", AdminPage::userList)
                 .get("/group/list/get", Handlers.withUser(GroupPage::listGet))

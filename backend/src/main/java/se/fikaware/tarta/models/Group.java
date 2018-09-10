@@ -2,7 +2,6 @@ package se.fikaware.tarta.models;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import se.fikaware.sync.Name;

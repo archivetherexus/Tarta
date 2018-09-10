@@ -24,11 +24,43 @@ public class Syncer {
 
     private Map<Class, IObjectSyncer> objectSyncers;
 
+    public void buildClassSyncer(Class classObject) {
+        var parsedFields = new LinkedList<ParsedField>();
+
+        Class cl = classObject;
+        while (cl != null) {
+            var fields = cl.getDeclaredFields();
+            for (var field: fields) {
+                var nameAnnotation = field.getAnnotation(Name.class);
+                if (nameAnnotation != null) {
+                    parsedFields.push(new ParsedField(nameAnnotation.value(), field));
+                }
+            }
+            cl = cl.getSuperclass();
+        }
+
+        objectSyncers.put(classObject, (o, i) -> {
+            i.writeMapBegin();
+            var iterator = parsedFields.iterator();
+            if (iterator.hasNext()) {
+                var parsedField = iterator.next();
+                i.writeMapKey(parsedField.name);
+                write(i, parsedField.field.get(o));
+                while (iterator.hasNext()) {
+                    i.writeMapNext();
+                    parsedField = iterator.next();
+                    i.writeMapKey(parsedField.name);
+                    write(i, parsedField.field.get(o));
+                }
+            }
+            i.writeMapEnd();
+        });
+    }
+
     public Syncer() {
         objectSyncers = new HashMap<>();
         Reflections ref = new Reflections("se.fikaware");
         for (Class<?> classObject : ref.getTypesAnnotatedWith(Syncable.class)) {
-
             var syncer = classObject.getAnnotation(Syncable.class).syncer();
 
             if (syncer != UnsetObjectSyncer.class) {
@@ -38,38 +70,23 @@ public class Syncer {
                     e.printStackTrace();
                 }
             } else {
-
-                var parsedFields = new LinkedList<ParsedField>();
-
-                Class cl = classObject;
-                while (cl != null) {
-                    var fields = cl.getDeclaredFields();
-                    for (var field: fields) {
-                        var nameAnnotation = field.getAnnotation(Name.class);
-                        if (nameAnnotation != null) {
-                            parsedFields.push(new ParsedField(nameAnnotation.value(), field));
-                        }
-                    }
-                    cl = cl.getSuperclass();
-                }
-
-                objectSyncers.put(classObject, (o, i) -> {
-                    i.writeMapBegin();
-                    var iterator = parsedFields.iterator();
-                    if (iterator.hasNext()) {
-                        var parsedField = iterator.next();
-                        i.writeMapKey(parsedField.name);
-                        write(i, parsedField.field.get(o));
-                        while (iterator.hasNext()) {
-                            i.writeMapNext();
-                            parsedField = iterator.next();
-                            i.writeMapKey(parsedField.name);
-                            write(i, parsedField.field.get(o));
-                        }
-                    }
-                    i.writeMapEnd();
-                });
+                buildClassSyncer(classObject);
             }
+        }
+
+        try {
+
+            for(Class<?> c : ref.getTypesAnnotatedWith(SyncerFor.class)) {
+                Class forType = c.getAnnotation(SyncerFor.class).type();
+                Object o = c.getConstructor().newInstance();
+                if (o instanceof IObjectSyncer) {
+                    objectSyncers.put(forType, (IObjectSyncer)o);
+                } else {
+                    throw new RuntimeException("Type annotated with SyncFor does not implement the IObjectSyncer: " + c.getCanonicalName());
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
         }
         installPrimitives();
     }
