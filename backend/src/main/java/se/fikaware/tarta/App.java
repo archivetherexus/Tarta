@@ -65,10 +65,13 @@ public class App {
         System.out.println("--- Round 2 ---");
         storage.getAll(TestObject.class).forEach(TestObject::bark);
 
-        new TestObject(storage, "Momo", 21, true).save();
+        TestObject obj = new TestObject(storage, "Momo", 21, true);
+        obj.save();
 
         System.out.println("--- Round 3 ---");
         storage.getAll(TestObject.class).forEach(TestObject::bark);
+
+        obj.save();
 
         new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {

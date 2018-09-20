@@ -1,8 +1,10 @@
 package se.fikaware.persistent;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,36 +74,11 @@ public class PersistentStorage {
             collection.add(object);
 
             try {
-                PersistentWriter writer = new PersistentWriter() {
-                    StringBuilder builder = new StringBuilder();
-                    @Override
-                    public void writeString(String value) {
-                        builder.append(value);
-                        builder.append(';');
-                    }
-
-                    @Override
-                    public void writeBoolean(boolean value) {
-                        builder.append(value ? "true;" : "false;");
-                    }
-
-                    @Override
-                    public void writeInt(int value) {
-                        builder.append(Integer.toString(value));
-                        builder.append(';');
-                    }
-
-                    @Override
-                    public String toString() {
-                        builder.append('\n');
-                        String value = builder.toString();
-                        builder = new StringBuilder();
-                        return value;
-                    }
-                };
+                SimplePersistentWriter writer = new SimplePersistentWriter();
                 object.write(writer);
-                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), true), "UTF-8"))
-                        .append(writer.toString()).flush();
+                writer.builder.append('\n');
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), true), StandardCharsets.UTF_8))
+                        .append(writer.builder.toString()).flush();
             } catch (IOException e) {
                 throw new RuntimeException("Could not add object to persistent memory! Type: " + type.getSimpleName());
             }
@@ -109,6 +86,30 @@ public class PersistentStorage {
             return true;
         } else {
             return false;
+        }
+    }
+
+    class SimplePersistentWriter implements PersistentWriter {
+        StringBuilder builder = new StringBuilder();
+        @Override
+        public void writeString(String value) {
+            builder.append(value);
+            builder.append(';');
+        }
+
+        @Override
+        public void writeBoolean(boolean value) {
+            builder.append(value ? "true;" : "false;");
+        }
+
+        @Override
+        public void writeInt(int value) {
+            builder.append(Integer.toString(value));
+            builder.append(';');
+        }
+
+        public void writeNext() {
+            builder.append('\n');
         }
     }
 
@@ -128,7 +129,18 @@ public class PersistentStorage {
         return (Stream<T>) loadedObjects.computeIfAbsent(type, this::loadObjectsFromFile).stream();
     }
 
-    public void update() {
-        throw new RuntimeException("Updating already inserted objects is not supported yet!");
+    public void update(Class type) {
+        SimplePersistentWriter writer = new SimplePersistentWriter();
+        loadedObjects.computeIfAbsent(type, k -> new LinkedList<>()).forEach(o -> {
+            o.write(writer);
+            writer.builder.append('\n');
+        });
+
+        try {
+            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), false), StandardCharsets.UTF_8))
+                    .append(writer.builder.toString()).flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not update objects with type:  " + type.getSimpleName());
+        }
     }
 }

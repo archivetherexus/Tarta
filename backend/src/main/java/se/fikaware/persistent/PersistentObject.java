@@ -11,7 +11,7 @@ public abstract class PersistentObject {
 
     public final void save() {
         if (!owner.insertObject(this)) {
-            owner.update();
+            owner.update(this.getClass());
         }
     }
 }
