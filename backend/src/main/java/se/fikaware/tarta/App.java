@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import se.fikaware.persistent.PersistentObject;
 import se.fikaware.persistent.PersistentReader;
 import se.fikaware.persistent.PersistentStorage;
+import se.fikaware.persistent.PersistentWriter;
 import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.GroupPage;
 import se.fikaware.tarta.pages.PostsPage;
@@ -18,19 +19,56 @@ import java.util.List;
 public class App {
 
     public static class TestObject extends PersistentObject {
+        String name;
+        int age;
+        boolean isCat;
+
         public TestObject(PersistentStorage owner, PersistentReader r) {
             super(owner);
+            name = r.readString();
+            age = r.readInt();
+            isCat = r.readBoolean();
+        }
+
+        public TestObject(PersistentStorage owner, String name, int age, boolean isCat) {
+            super(owner);
+            this.name = name;
+            this.age = age;
+            this.isCat = isCat;
+        }
+
+        @Override
+        protected void write(PersistentWriter writer) {
+            writer.writeString(name);
+            writer.writeInt(age);
+            writer.writeBoolean(isCat);
         }
 
         public void bark() {
-            System.out.println("Woof woof!");
+            System.out.println(
+                    (isCat ? "Nyaa! " : "Woof woof! ") +
+                            "my name is: " +
+                            name +
+                            " and I am " + age +
+                            " years old!"
+            );
         }
     }
 
     public static void main(final String[] args) {
 
         PersistentStorage storage = new PersistentStorage("test-school");
-        storage.loadAll(TestObject.class).forEach(TestObject::bark);
+
+        System.out.println("--- Round 1 ---");
+        storage.getAll(TestObject.class).forEach(TestObject::bark);
+
+        System.out.println("--- Round 2 ---");
+        storage.getAll(TestObject.class).forEach(TestObject::bark);
+
+        new TestObject(storage, "Momo", 21, true).save();
+
+        System.out.println("--- Round 3 ---");
+        storage.getAll(TestObject.class).forEach(TestObject::bark);
 
         new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {
