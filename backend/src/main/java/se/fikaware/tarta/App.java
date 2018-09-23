@@ -1,10 +1,7 @@
 package se.fikaware.tarta;
 
 import com.mongodb.MongoClient;
-import se.fikaware.persistent.PersistentObject;
-import se.fikaware.persistent.PersistentReader;
-import se.fikaware.persistent.PersistentStorage;
-import se.fikaware.persistent.PersistentWriter;
+import se.fikaware.persistent.*;
 import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.GroupPage;
 import se.fikaware.tarta.pages.PostsPage;
@@ -14,6 +11,7 @@ import se.fikaware.web.Response;
 import se.fikaware.web.Server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class App {
@@ -23,7 +21,7 @@ public class App {
         int age;
         boolean isCat;
 
-        public TestObject(PersistentStorage owner, PersistentReader r) {
+        public TestObject(SimpleStorage owner, PersistentReader r) {
             super(owner);
             name = r.readString();
             age = r.readInt();
@@ -65,7 +63,7 @@ public class App {
         System.out.println("--- Round 2 ---");
         storage.getAll(TestObject.class).forEach(TestObject::bark);
 
-        TestObject obj = new TestObject(storage, "Momo", 21, true);
+        TestObject obj = new TestObject(storage, "Momo" + Calendar.getInstance().getTimeInMillis(), 21, true);
         obj.save();
 
         System.out.println("--- Round 3 ---");

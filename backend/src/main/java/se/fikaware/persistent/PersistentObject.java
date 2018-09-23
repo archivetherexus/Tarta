@@ -1,9 +1,9 @@
 package se.fikaware.persistent;
 
 public abstract class PersistentObject {
-    private final PersistentStorage owner;
+    private final SimpleStorage owner;
 
-    protected PersistentObject(PersistentStorage owner) {
+    protected PersistentObject(SimpleStorage owner) {
         this.owner = owner;
     }
 

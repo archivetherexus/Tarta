@@ -1,24 +1,20 @@
 package se.fikaware.persistent;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PersistentStorage {
+public class PersistentStorage implements SimpleStorage {
     private static String persistentRoot = System.getenv().get("HOME") + "/pstorage";
     private final String storageName;
-    private Map<Class, Collection<PersistentObject>> loadedObjects = new HashMap<>();
+    private Map<Class, Map<Object, PersistentObject>> loadedObjects = new HashMap<>();
 
     public PersistentStorage(String storageName) {
         this.storageName = storageName;
@@ -28,36 +24,55 @@ public class PersistentStorage {
         return Paths.get(persistentRoot, storageName, type.getName().replace('$', '_') + ".csv");
     }
 
-    private <T extends PersistentObject> T loadObjectFromCSV(Class<? extends PersistentObject> type, String csvLine) {
+    class SimplePersistentReader implements PersistentReader {
+        int index = 0;
+        Object key = null;
+        final String []csvData;
+
+        SimplePersistentReader(String []csvData) {
+            this.csvData = csvData;
+        }
+
+        @Override
+        public String readString() {
+            String value = csvData[index++];
+            if (key == null) {
+                key = value;
+            }
+            return value;
+        }
+
+        @Override
+        public boolean readBoolean() {
+            boolean value = Boolean.parseBoolean(csvData[index++]);
+            if (key == null) {
+                key = value;
+            }
+            return value;
+        }
+
+        @Override
+        public int readInt() {
+            int value = Integer.parseInt(csvData[index++]);
+            if (key == null) {
+                key = value;
+                return value;
+            }
+            return value;
+        }
+    }
+
+    private <T extends PersistentObject> void loadObjectIntoMapFromCSV(Class<? extends PersistentObject> type, String csvLine, Map<Object, T> into) {
         try {
-
-            String []csvData  = csvLine.split(";");
-
-            PersistentReader reader = new PersistentReader() {
-                int index = 0;
-
-                @Override
-                public String readString() {
-                    return csvData[index++];
-                }
-
-                @Override
-                public boolean readBoolean() {
-                    return Boolean.parseBoolean(csvData[index++]);
-                }
-
-                @Override
-                public int readInt() {
-                    return Integer.parseInt(csvData[index++]);
-                }
-            };
+            SimplePersistentReader reader = new SimplePersistentReader(csvLine.split(";"));
 
             if (type.isMemberClass() && (type.getModifiers() & Modifier.STATIC) == 0) {
                 throw new RuntimeException("Please make " + type.getSimpleName() + " a static class");
             }
 
             //noinspection unchecked
-            return (T) type.getConstructor(PersistentStorage.class, PersistentReader.class).newInstance(this, reader);
+            T o = (T) type.getConstructor(SimpleStorage.class, PersistentReader.class).newInstance(this, reader);
+            into.put(reader.key, o);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not create class for category.");
@@ -66,16 +81,18 @@ public class PersistentStorage {
         }
     }
 
-    boolean insertObject(PersistentObject object) {
-        Class type = object.getClass();
-        Collection collection = loadedObjects.get(type);
-        if (!collection.contains(object)) {
-            //noinspection unchecked
-            collection.add(object);
+    @Override
+    public boolean insertObject(PersistentObject object) {
+        // TODO: Duplicate same-key but different objects!
 
+        Class<? extends PersistentObject> type = object.getClass();
+        Map<Object, PersistentObject> map = loadedObjects.get(type);
+        SimplePersistentWriter writer = new SimplePersistentWriter();
+        object.write(writer);
+        if (!map.containsKey(writer.key)) {
+            //noinspection unchecked
+            map.put(writer.key, object);
             try {
-                SimplePersistentWriter writer = new SimplePersistentWriter();
-                object.write(writer);
                 writer.builder.append('\n');
                 new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), true), StandardCharsets.UTF_8))
                         .append(writer.builder.toString()).flush();
@@ -91,32 +108,41 @@ public class PersistentStorage {
 
     class SimplePersistentWriter implements PersistentWriter {
         StringBuilder builder = new StringBuilder();
+        Object key = null;
+
         @Override
         public void writeString(String value) {
+            if (key == null) {
+                key = value;
+            }
             builder.append(value);
             builder.append(';');
         }
 
         @Override
         public void writeBoolean(boolean value) {
+            if (key == null) {
+                key = value;
+            }
             builder.append(value ? "true;" : "false;");
         }
 
         @Override
         public void writeInt(int value) {
+            if (key == null) {
+                key = value;
+            }
             builder.append(Integer.toString(value));
             builder.append(';');
         }
-
-        public void writeNext() {
-            builder.append('\n');
-        }
     }
 
-    private <T extends PersistentObject> Collection<T> loadObjectsFromFile(Class<T> type) {
+    private <T extends PersistentObject> Map<Object, T> loadObjectsFromFile(Class<T> type) {
         Path path = getCategoryPath(type);
         try {
-            return Files.lines(getCategoryPath(type)).map(f -> this.<T>loadObjectFromCSV(type, f)).collect(Collectors.toList());
+            Map<Object, T> map = new HashMap<>();
+            Files.lines(getCategoryPath(type)).forEach(f -> this.loadObjectIntoMapFromCSV(type, f, map));
+            return map;
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Could not find category: " + path);
         } catch (IOException e) {
@@ -124,15 +150,16 @@ public class PersistentStorage {
         }
     }
 
+    @Override
     public <T extends PersistentObject> Stream<T> getAll(Class<T> type) {
         //noinspection unchecked
-        return (Stream<T>) loadedObjects.computeIfAbsent(type, this::loadObjectsFromFile).stream();
+        return (Stream<T>) loadedObjects.computeIfAbsent(type, this::loadObjectsFromFile).values().stream();
     }
 
-    public void update(Class type) {
+    public void update(Class<? extends PersistentObject> type) {
         SimplePersistentWriter writer = new SimplePersistentWriter();
-        loadedObjects.computeIfAbsent(type, k -> new LinkedList<>()).forEach(o -> {
-            o.write(writer);
+        loadedObjects.computeIfAbsent(type, k -> new HashMap<>()).forEach((k, v) -> {
+            v.write(writer);
             writer.builder.append('\n');
         });
 
