@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Syncable {
-    Class<? extends IObjectSyncer> syncer() default UnsetObjectSyncer.class;
+    Class<? extends ObjectSyncer> syncer() default UnsetObjectSyncer.class;
 }

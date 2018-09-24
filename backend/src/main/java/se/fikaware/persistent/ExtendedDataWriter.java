@@ -1,11 +1,8 @@
-package se.fikaware.sync;
+package se.fikaware.persistent;
 
 import java.io.IOException;
 
-public interface IWriter {
-    void writeNull() throws IOException;
-    void writeInteger(int i) throws IOException;
-    void writeString(String s) throws IOException;
+public interface ExtendedDataWriter extends DataWriter {
     void writeArrayBegin() throws IOException;
     void writeArrayNext() throws IOException;
     void writeArrayEnd() throws IOException;

@@ -1,6 +1,6 @@
 package se.fikaware.persistent;
 
-public interface PersistentReader {
+public interface DataReader {
     String readString();
     boolean readBoolean();
     int readInt();

@@ -1,13 +1,15 @@
 package se.fikaware.sync.json;
 
-import se.fikaware.sync.IWriter;
+import se.fikaware.persistent.ExtendedDataWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class JsonWriter implements IWriter {
+public class JsonWriter implements ExtendedDataWriter {
     private OutputStream outputStream;
-    private byte[] nullBytes = "null".getBytes();
+    static final private byte[] nullBytes = "null".getBytes();
+    static final private byte[] trueBytes = "true".getBytes();
+    static final private byte[] falseBytes = "false".getBytes();
 
     public JsonWriter(OutputStream outputStream) {
         this.outputStream = outputStream;
@@ -16,11 +18,6 @@ public class JsonWriter implements IWriter {
     @Override
     public void writeNull() throws IOException {
         outputStream.write(nullBytes);
-    }
-
-    @Override
-    public void writeInteger(int i) throws IOException {
-        outputStream.write(Integer.toString(i).getBytes());
     }
 
     @Override
@@ -33,6 +30,16 @@ public class JsonWriter implements IWriter {
             outputStream.write(c);
         }
         outputStream.write('"');
+    }
+
+    @Override
+    public void writeBoolean(boolean value) throws IOException {
+        outputStream.write(value ? trueBytes : falseBytes);
+    }
+
+    @Override
+    public void writeInt(int value) throws IOException {
+        outputStream.write(Integer.toString(value).getBytes());
     }
 
     @Override

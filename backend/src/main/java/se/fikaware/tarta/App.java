@@ -10,6 +10,7 @@ import se.fikaware.web.Handlers;
 import se.fikaware.web.Response;
 import se.fikaware.web.Server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -21,14 +22,14 @@ public class App {
         int age;
         boolean isCat;
 
-        public TestObject(SimpleStorage owner, PersistentReader r) {
+        public TestObject(DataStorage owner, DataReader r) {
             super(owner);
             name = r.readString();
             age = r.readInt();
             isCat = r.readBoolean();
         }
 
-        public TestObject(PersistentStorage owner, String name, int age, boolean isCat) {
+        public TestObject(CommaSeparatedStorage owner, String name, int age, boolean isCat) {
             super(owner);
             this.name = name;
             this.age = age;
@@ -36,7 +37,7 @@ public class App {
         }
 
         @Override
-        protected void write(PersistentWriter writer) {
+        protected void write(DataWriter writer) throws IOException {
             writer.writeString(name);
             writer.writeInt(age);
             writer.writeBoolean(isCat);
@@ -54,22 +55,34 @@ public class App {
     }
 
     public static void main(final String[] args) {
+        try {
+            CommaSeparatedStorage storage = new CommaSeparatedStorage("test-school");
 
-        PersistentStorage storage = new PersistentStorage("test-school");
+            System.out.println("--- Round 1 ---");
+            storage.getAll(TestObject.class).forEach(TestObject::bark);
 
-        System.out.println("--- Round 1 ---");
-        storage.getAll(TestObject.class).forEach(TestObject::bark);
+            System.out.println("--- Round 2 ---");
+            storage.getAll(TestObject.class).forEach(TestObject::bark);
 
-        System.out.println("--- Round 2 ---");
-        storage.getAll(TestObject.class).forEach(TestObject::bark);
+            TestObject obj = new TestObject(storage, "Momo" + Calendar.getInstance().getTimeInMillis(), 21, true);
 
-        TestObject obj = new TestObject(storage, "Momo" + Calendar.getInstance().getTimeInMillis(), 21, true);
-        obj.save();
+                obj.save();
 
-        System.out.println("--- Round 3 ---");
-        storage.getAll(TestObject.class).forEach(TestObject::bark);
 
-        obj.save();
+            System.out.println("--- Round 3 ---");
+            storage.getAll(TestObject.class).forEach(TestObject::bark);
+            storage.getObject(TestObject.class, "Shibuya").bark();
+            TestObject o = storage.getObject(TestObject.class, "Test");
+            if (o != null) {
+                o.bark();
+            } else {
+                System.out.println("Loaded null!");
+            }
+
+            obj.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         new Server(() -> new MongoClient().getDatabase("tarta-dev"))
                 .get("/test", req -> {

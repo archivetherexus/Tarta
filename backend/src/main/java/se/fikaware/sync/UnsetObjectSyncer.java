@@ -1,8 +1,10 @@
 package se.fikaware.sync;
 
-public class UnsetObjectSyncer implements IObjectSyncer {
+import se.fikaware.persistent.ExtendedDataWriter;
+
+public class UnsetObjectSyncer implements ObjectSyncer {
     @Override
-    public void write(Object o, IWriter i) {
+    public void write(Object o, ExtendedDataWriter i) {
         throw new UnsupportedOperationException();
     }
 }

@@ -87,7 +87,7 @@ public class Server {
         Logger logger = Logger.getLogger("");
         logger.setLevel(Level.ALL);
         Handler[] handlers = logger.getHandlers();
-        for(Handler handler : handlers) {
+        for (Handler handler: handlers) {
             handler.setFormatter(formatter);
         }
     }

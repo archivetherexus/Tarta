@@ -2,6 +2,7 @@ package se.fikaware.sync;
 
 import org.reflections.Reflections;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
+import se.fikaware.persistent.ExtendedDataWriter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class Syncer {
         }
     }
 
-    private Map<Class, IObjectSyncer> objectSyncers;
+    private Map<Class, ObjectSyncer> objectSyncers;
 
     public void buildClassSyncer(Class classObject) {
         var parsedFields = new LinkedList<ParsedField>();
@@ -60,7 +61,7 @@ public class Syncer {
     public Syncer() {
         objectSyncers = new HashMap<>();
         Reflections ref = new Reflections("se.fikaware");
-        for (Class<?> classObject : ref.getTypesAnnotatedWith(Syncable.class)) {
+        for (Class<?> classObject: ref.getTypesAnnotatedWith(Syncable.class)) {
             var syncer = classObject.getAnnotation(Syncable.class).syncer();
 
             if (syncer != UnsetObjectSyncer.class) {
@@ -76,13 +77,13 @@ public class Syncer {
 
         try {
 
-            for(Class<?> c : ref.getTypesAnnotatedWith(SyncerFor.class)) {
+            for (Class<?> c: ref.getTypesAnnotatedWith(SyncerFor.class)) {
                 Class forType = c.getAnnotation(SyncerFor.class).type();
                 Object o = c.getConstructor().newInstance();
-                if (o instanceof IObjectSyncer) {
-                    objectSyncers.put(forType, (IObjectSyncer)o);
+                if (o instanceof ObjectSyncer) {
+                    objectSyncers.put(forType, (ObjectSyncer)o);
                 } else {
-                    throw new RuntimeException("Type annotated with SyncFor does not implement the IObjectSyncer: " + c.getCanonicalName());
+                    throw new RuntimeException("Type annotated with SyncFor does not implement the ObjectSyncer: " + c.getCanonicalName());
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -93,7 +94,7 @@ public class Syncer {
 
     private void installPrimitives() {
         objectSyncers.put(int.class, (o, i) ->
-            i.writeInteger((int)o)
+            i.writeInt((int)o)
         );
         objectSyncers.put(String.class, (o, i) ->
             i.writeString((String)o)
@@ -129,7 +130,7 @@ public class Syncer {
         });
     }
 
-    public void write(IWriter i, @Nullable Object o) throws IOException {
+    public void write(ExtendedDataWriter i, @Nullable Object o) throws IOException {
         if (o == null) {
             i.writeNull();
         } else {
