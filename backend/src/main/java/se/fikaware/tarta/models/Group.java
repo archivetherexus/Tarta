@@ -4,21 +4,25 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import se.fikaware.persistent.DataReader;
+import se.fikaware.persistent.DataStorage;
+import se.fikaware.persistent.DataWriter;
+import se.fikaware.persistent.PersistentObject;
 import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.mongodb.client.model.Filters;
+import se.fikaware.web.Server;
 
 @Syncable
-public class Group {
+public class Group extends PersistentObject  {
     public static MongoCollection<Document> groupCollection = null;
 
-    public User[] members;
+    public List<User> members;
 
     public School school;
 
@@ -28,21 +32,31 @@ public class Group {
     @Name("name")
     public String name;
 
-    public ObjectId id;
-
-    public Group(School school, String slugName, String name, User[] members, ObjectId id) {
+    public Group(DataStorage storage, School school, String slugName, String name, User[] members, ObjectId id) {
+        super(storage);
         this.school = school;
         this.slugName = slugName;
         this.name = name;
-        this.members = members;
-        this.id = id;
+        this.members = Arrays.stream(members).collect(Collectors.toList());
+    }
+
+    public Group(DataStorage storage, DataReader dr) {
+        super(storage);
+        slugName = dr.readString();
+        name = dr.readString();
+        members = new LinkedList<>();
+        int c = dr.readInt();
+        for (int i = 0; i < c; i++) {
+            int id = dr.readInt();
+            members.add(storage.getObject(User.class, id));
+        }
     }
 
     public Document toDocument() {
         return new Document("name", name)
                 .append("slug_name", slugName)
                 .append("school_id", school.reference)
-                .append("members", Arrays.stream(members).map(m -> m.id).collect(Collectors.toList()));
+                .append("members", new LinkedList());
     }
 
     private static String createSlug(String schoolName) {
@@ -51,14 +65,14 @@ public class Group {
 
     public static Group create(School school, String name) {
         ObjectId id = new ObjectId();
-        var group = new Group(school, createSlug(name), name, new User[]{}, id);
+        var group = new Group(Server.storage, school, createSlug(name), name, new User[]{}, id);
         groupCollection.insertOne(group.toDocument().append("_id", id));
         return group;
     }
 
     public static Group load(String recipientSlugName) {
         var entry = groupCollection.find(Filters.eq("slug_name", recipientSlugName)).first();
-        return new Group(School.load(entry.getObjectId("school_id")),
+        return new Group(Server.storage, School.load(entry.getObjectId("school_id")),
                 recipientSlugName,
                 entry.getString("name"),
                 entry.get("members", new ArrayList<ObjectId>()).stream().map(User::load).toArray(User[]::new),
@@ -68,7 +82,7 @@ public class Group {
 
     public static Group load(ObjectId id) {
         var entry = groupCollection.find(Filters.eq("_id", id)).first();
-        return new Group(School.load(entry.getObjectId("school_id")),
+        return new Group(Server.storage, School.load(entry.getObjectId("school_id")),
                          entry.getString("slug_name"),
                          entry.getString("name"),
                          entry.get("members", new ArrayList<ObjectId>()).stream().map(User::load).toArray(User[]::new),
@@ -80,11 +94,12 @@ public class Group {
         var iterator = groupCollection.find(Filters.eq("school_id", school.reference));
 
         for (var entry: iterator) {
-            list.add(new Group(school,
-                               entry.getString("slug_name"),
-                               entry.getString("name"),
-                               entry.get("members", new ArrayList<ObjectId>()).stream().map(User::load).toArray(User[]::new),
-                               entry.getObjectId("_id")));
+            list.add(new Group(Server.storage,
+                                school,
+                                entry.getString("slug_name"),
+                                entry.getString("name"),
+                                entry.get("members", new ArrayList<ObjectId>()).stream().map(User::load).toArray(User[]::new),
+                                entry.getObjectId("_id")));
         }
 
         return list;
@@ -95,7 +110,8 @@ public class Group {
         var iterator = groupCollection.find(Filters.in("members", user.id));
 
         for (var entry: iterator) {
-            list.add(new Group(School.load(entry.getObjectId("school_id")),
+            list.add(new Group(Server.storage,
+                    School.load(entry.getObjectId("school_id")),
                     entry.getString("slug_name"),
                     entry.getString("name"),
                     entry.get("members", new ArrayList<ObjectId>()).stream().map(User::load).toArray(User[]::new),
@@ -106,14 +122,19 @@ public class Group {
     }
 
     public void addUser(User user) {
-        members = Arrays.copyOf(members, members.length + 1);
-        members[members.length - 1] = user;
-        groupCollection.updateOne(Filters.eq("_id", id), Updates.addToSet("members", user.id));
+        members.add(user);
+        //groupCollection.updateOne(Filters.eq("_id", id), Updates.addToSet("members", user.id));
     }
 
     public static void deleteFrom(School from) {
         var filter = Filters.eq("school_id", from.reference);
         Post.postCollection.deleteMany(Filters.in("recipient", groupCollection.find(filter).map(s -> s.getObjectId("_id")).into(new ArrayList<>())));
         groupCollection.deleteMany(filter);
+    }
+
+    @Override
+    protected void write(DataWriter writer) throws IOException {
+        writer.writeString(slugName);
+        writer.writeString(name);
     }
 }

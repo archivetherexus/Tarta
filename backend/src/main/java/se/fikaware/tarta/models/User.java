@@ -4,9 +4,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import se.fikaware.persistent.DataWriter;
+import se.fikaware.persistent.PersistentObject;
 import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Syncable
-public class User {
+public class User extends PersistentObject {
     static public MongoCollection<Document> userCollection = null;
 
     @Name("username")
@@ -30,6 +33,7 @@ public class User {
     public School[] school;
 
     public User() {
+        super(null);
         this.username = "";
         this.password = "";
         this.isAdmin = false;
@@ -102,5 +106,10 @@ public class User {
         Group.load(school.slugName).addUser(user);
         userCollection.insertOne(user.toDocument().append("_id", user.id));
         return user;
+    }
+
+    @Override
+    protected void write(DataWriter writer) throws IOException {
+
     }
 }

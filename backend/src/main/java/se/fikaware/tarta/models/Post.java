@@ -44,23 +44,11 @@ public class Post {
     private Document toDocument() {
         return new Document("school_id", school.reference)
                 .append("title", title)
-                .append("recipient", recipient.id)
                 .append("content", content);
     }
 
     public static Collection<Post> getAll(School school, Group[] groups) {
-        var list = new ArrayList<Post>();
-        var iterator = postCollection.find(Filters.and(Filters.eq("school_id", school.reference),
-                                                       Filters.in("recipient", Arrays.stream(groups).map(g -> g.id).collect(Collectors.toList()))));
-
-        for (var entry: iterator) {
-            var title = entry.getString("title");
-            var content = entry.getString("content");
-            var recipient = Group.load(entry.getObjectId("recipient"));
-            list.add(new Post(school, title, content, recipient));
-        }
-
-        return list;
+        throw new RuntimeException("Not implemented yet!");
     }
 
     public static Post create(School school , String title, String content, Group recipient) {

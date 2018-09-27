@@ -9,6 +9,8 @@ import io.undertow.util.HttpString;
 
 import org.slf4j.LoggerFactory;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
+import se.fikaware.persistent.CommaSeparatedStorage;
+import se.fikaware.persistent.DataStorage;
 import se.fikaware.tarta.models.*;
 
 import java.util.function.Supplier;
@@ -16,6 +18,8 @@ import java.util.logging.*;
 
 @EverythingIsNonnullByDefault
 public class Server {
+
+    public static final DataStorage storage = new CommaSeparatedStorage("tarta");
 
     private RoutingHandler routes = new RoutingHandler();
 
