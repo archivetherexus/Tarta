@@ -8,15 +8,19 @@ import se.fikaware.tarta.models.School;
 import se.fikaware.tarta.models.User;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
+import se.fikaware.web.SendableIterator;
+
+import java.io.IOException;
 
 public class PostsPage {
 
     public static void feedGet(User user, HttpServerExchange exchange) {
-        Response.json(exchange, Post.getAll(user.school[0], Group.getAll(user).toArray(new Group[] {})));
+        var userGroup = user.schools.get(0).schoolStorage.getAll(Group.class).filter(g -> g.members.contains(user));
+        Response.json(exchange, new SendableIterator<>(user.schools.get(0).schoolStorage.getAll(Post.class).filter(p -> userGroup.anyMatch(g -> g == p.recipient)).iterator()));
     }
 
-    public static void create(User user, HttpServerExchange exchange) {
-        School school = user.school[0];
+    public static void create(User user, HttpServerExchange exchange) throws IOException {
+        School school = user.schools.get(0);
         var form = exchange.getAttachment(FormDataParser.FORM_DATA);
         var title = Request.getString(form, "title", null);
         var content = Request.getString(form, "content", null);
@@ -26,7 +30,7 @@ public class PostsPage {
         if (title == null || content == null || recipientSlugName == null) {
             exchange.setStatusCode(400);
         } else {
-            Post.create(school, title, content, Group.load(recipientSlugName));
+            new Post(school, title, content, school.schoolStorage.getObject(Group.class, recipientSlugName));
             // TODO: Post a notification for all client.
         }
     }

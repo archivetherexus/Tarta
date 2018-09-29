@@ -1,66 +1,52 @@
 package se.fikaware.tarta.models;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import se.fikaware.sync.Name;
+import se.fikaware.persistent.*;
 import se.fikaware.sync.Syncable;
+import se.fikaware.web.Sendable;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.IOException;
 
 @Syncable
-public class Course {
-    public static MongoCollection<Document> courseCollection = null;
-
+public class Course extends PersistentObject implements Sendable {
+    public String slugName;
+    public String courseName;
     public School school;
 
-    @Name("slugName")
-    public String slugName;
-
-    @Name("courseName")
-    public String courseName;
-
-    @Name("id")
-    public ObjectId id;
-
-    public Course(School school, String slugName, String courseName, ObjectId id) {
+    public Course(School school, String courseName) throws IOException {
+        super(school.schoolStorage);
         this.school = school;
-        this.slugName = slugName;
+        this.slugName = createSlug(courseName);
         this.courseName = courseName;
-        this.id = id;
+        this.save();
+    }
+
+    public Course(DataStorage storage, DataReader reader) {
+        super(storage);
+        slugName = reader.readString();
+        courseName = reader.readString();
+        school = storage.getObject(School.class, reader.readString());
+
     }
 
     private static String createSlug(String schoolName) {
         return schoolName.replace(' ', '_').toLowerCase();
     }
 
-    static Course create(School school, String courseName) {
-        Course course = new Course(school, createSlug(courseName), courseName, new ObjectId());
-        courseCollection.insertOne(course.toDocument().append("_id", course.id));
-        return course;
+    @Override
+    protected void write(DataWriter writer) throws IOException {
+        writer.writeString(slugName);
+        writer.writeString(courseName);
+        writer.writeString(school.slugName);
     }
 
-    public static Collection<Course> getAll(School school) {
-        Collection<Course> list = new ArrayList<>();
-        var iterator = courseCollection.find(Filters.eq("school_id", school.reference));
-
-        for (var entry: iterator) {
-            list.add(new Course(School.load(entry.getObjectId("school_id")), entry.getString("slug_name"), entry.getString("course_name"), entry.getObjectId("_id")));
-        }
-
-        return list;
-    }
-
-    private Document toDocument() {
-        return new Document("course_name", courseName)
-                .append("school_id", school.reference)
-                .append("slug_name", school.slugName);
-    }
-
-    public static Course load(ObjectId id) {
-        var course = courseCollection.find(Filters.eq("_id", id)).first();
-        return new Course(School.load(course.getObjectId("school_id")), course.getString("slug_name"), course.getString("course_name"), id);
+    @Override
+    public void send(ExtendedDataWriter writer) throws IOException {
+        writer.writeMapBegin();
+        writer.writeMapKey("courseName");
+        writer.writeString(courseName);
+        writer.writeMapNext();
+        writer.writeMapKey("slugName");
+        writer.writeString(slugName);
+        writer.writeMapEnd();
     }
 }

@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -89,6 +90,7 @@ public class CommaSeparatedStorage implements DataStorage {
     }
 
     private static String persistentRoot = System.getenv().get("HOME") + "/pstorage";
+    private final RootStorage rootStorage;
     private final String storageName;
     private Map<Class<? extends PersistentObject>, Map<Object, PersistentObject>> loadedObjects = new HashMap<>();
     private HashSet<Class> hasLoadedFromFile = new HashSet<>();
@@ -98,7 +100,8 @@ public class CommaSeparatedStorage implements DataStorage {
         return (Map<Object, T>) loadedObjects.computeIfAbsent(type, k -> new HashMap<>());
     }
 
-    public CommaSeparatedStorage(String storageName) {
+    public CommaSeparatedStorage(RootStorage rootStorage, String storageName) {
+        this.rootStorage = rootStorage;
         this.storageName = storageName;
     }
 
@@ -165,7 +168,7 @@ public class CommaSeparatedStorage implements DataStorage {
         return map.computeIfAbsent(key, k -> {
             Path path = getCategoryPath(type);
             try {
-                Stream<String[]> csvLines = Files.lines(getCategoryPath(type)).map(l -> l.split(";"));
+                Stream<String[]> csvLines = Files.lines(path).map(l -> l.split(";"));
                 Iterator<String[]> i;
                 String[] csvLine;
                 for (i = csvLines.iterator(), csvLine = i.next(); i.hasNext(); csvLine = i.next()) {
@@ -174,8 +177,13 @@ public class CommaSeparatedStorage implements DataStorage {
                     }
                 }
                 return null;
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Could not find category: " + path);
+            } catch (FileNotFoundException | NoSuchFileException e) {
+                try {
+                    Files.createFile(path);
+                    return null;
+                } catch (IOException e1) {
+                    throw new RuntimeException("Could not create category file: " + path + "\n" + e);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -209,5 +217,24 @@ public class CommaSeparatedStorage implements DataStorage {
         } catch (IOException e) {
             throw new RuntimeException("Could not update objects with type:  " + type.getSimpleName());
         }
+    }
+
+    @Override
+    public void remove(Class<? extends PersistentObject> aClass, PersistentObject persistentObject) {
+        // FIXME: We could get the INDEX/KEY here instead, same as in the other methods.
+        getLoadedObjects(aClass).values().remove(persistentObject);
+    }
+
+    @Override
+    public void deleteAll() {
+        File file = Paths.get(persistentRoot, storageName).toFile();
+        if (file != null) {
+            file.delete();
+        }
+    }
+
+    @Override
+    public RootStorage getRootStorage() {
+        return null;
     }
 }

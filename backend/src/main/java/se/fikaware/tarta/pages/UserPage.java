@@ -10,6 +10,10 @@ import se.fikaware.tarta.models.Session;
 import se.fikaware.tarta.models.User;
 import se.fikaware.web.Request;
 import se.fikaware.web.Response;
+import se.fikaware.web.SendableMap;
+import se.fikaware.web.Server;
+
+import java.util.Map;
 
 public class UserPage {
     public static void login(HttpServerExchange exchange) {
@@ -29,26 +33,24 @@ public class UserPage {
 
         logger.info("User: " + username + ", Password: " + password);
 
-
-        if (User.exists(username)) {
-            var user = User.load(username);
-
+        var user = Server.getInstance().miscStorage.getObject(User.class, username);
+        if (user != null) {
             // TODO: The password should be one-way hashed...
             if (password.equals(user.password)) {
                 var session = Session.startSession();
                 session.user = user;
-                Response.json(exchange, new TinyMap<String, String>()
+                Response.json(exchange, new SendableMap<>(new TinyMap<String, String>()
                         .add("status", "OK")
-                        .add("sessionID", session.sessionID));
+                        .add("sessionID", session.sessionID)));
             } else {
-                Response.json(exchange, new TinyMap<String, String>()
+                Response.json(exchange, new SendableMap<>(new TinyMap<String, String>()
                         .add("status", "Failure")
-                        .add("reason", "Incorrect password!"));
+                        .add("reason", "Incorrect password!")));
             }
         } else {
-            Response.json(exchange, new TinyMap<String, String>()
+            Response.json(exchange, new SendableMap<>(new TinyMap<String, String>()
                     .add("status", "Failure")
-                    .add("reason", "Unknown user!"));
+                    .add("reason", "Unknown user!")));
         }
 
     }
@@ -61,6 +63,6 @@ public class UserPage {
     }
 
     public static void name(User user, HttpServerExchange exchange) {
-        Response.json(exchange, user.username);
+        Response.json(exchange, writer -> writer.writeString(user.username));
     }
 }

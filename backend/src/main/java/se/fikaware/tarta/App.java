@@ -1,6 +1,5 @@
 package se.fikaware.tarta;
 
-import com.mongodb.MongoClient;
 import se.fikaware.persistent.*;
 import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.GroupPage;
@@ -13,6 +12,7 @@ import se.fikaware.web.Server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 public class App {
@@ -29,7 +29,7 @@ public class App {
             isCat = r.readBoolean();
         }
 
-        public TestObject(CommaSeparatedStorage owner, String name, int age, boolean isCat) {
+        TestObject(CommaSeparatedStorage owner, String name, int age, boolean isCat) {
             super(owner);
             this.name = name;
             this.age = age;
@@ -43,7 +43,7 @@ public class App {
             writer.writeBoolean(isCat);
         }
 
-        public void bark() {
+        void bark() {
             System.out.println(
                     (isCat ? "Nyaa! " : "Woof woof! ") +
                             "my name is: " +
@@ -56,7 +56,7 @@ public class App {
 
     public static void main(final String[] args) {
         try {
-            CommaSeparatedStorage storage = new CommaSeparatedStorage("test-school");
+            CommaSeparatedStorage storage = new CommaSeparatedStorage(null, "test-school");
 
             System.out.println("--- Round 1 ---");
             storage.getAll(TestObject.class).forEach(TestObject::bark);
@@ -84,7 +84,7 @@ public class App {
             e.printStackTrace();
         }
 
-        new Server(() -> new MongoClient().getDatabase("tarta-dev"))
+        new Server()
                 .get("/test", req -> {
                     req.getQueryParameters().get("hello");
                     List<String> list = new ArrayList<>();
@@ -92,7 +92,17 @@ public class App {
                     list.add("World");
                     list.add("Ok.");
 
-                    Response.json(req, list);
+                    Response.json(req, writer -> {
+                        writer.writeArrayBegin();
+                        Iterator<String> i = list.iterator();
+                        while(i.hasNext()) {
+                            writer.writeString(i.next());
+                            if (i.hasNext()) {
+                                writer.writeArrayNext();
+                            }
+                        }
+                        writer.writeArrayEnd();
+                    });
                 })
                 .post("/user/login", UserPage::login)
                 .get("/user/settings/get", UserPage::settingsGet)

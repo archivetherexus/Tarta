@@ -1,6 +1,5 @@
 package se.fikaware.web;
 
-import com.mongodb.client.MongoDatabase;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
@@ -11,15 +10,25 @@ import org.slf4j.LoggerFactory;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
 import se.fikaware.persistent.CommaSeparatedStorage;
 import se.fikaware.persistent.DataStorage;
-import se.fikaware.tarta.models.*;
+import se.fikaware.persistent.RootStorage;
 
-import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import java.util.logging.*;
 
 @EverythingIsNonnullByDefault
 public class Server {
 
-    public static final DataStorage storage = new CommaSeparatedStorage("tarta");
+    @Nullable
+    private static Server instance = null;
+
+    public static Server getInstance() {
+        if (instance == null) {
+            throw new RuntimeException("Server not initialised!");
+        }
+        return instance;
+    }
+
+    public final DataStorage miscStorage;
 
     private RoutingHandler routes = new RoutingHandler();
 
@@ -69,9 +78,11 @@ public class Server {
         return this;
     }
 
-    public Server(Supplier<MongoDatabase> databaseCreator) {
+    public Server() {
+        instance = this;
         setupLogger();
-        setupDatabase(databaseCreator.get());
+        RootStorage storage = new RootStorage((s, name) -> new CommaSeparatedStorage(s, "tarta/" + name));
+        miscStorage = storage.getStorage("_misc");
 
     }
 
@@ -102,14 +113,6 @@ public class Server {
                 .setHandler(routes)
                 .build();
         server.start();
-    }
-
-    private static void setupDatabase(MongoDatabase database) {
-        School.schoolCollection = database.getCollection("schools");
-        Post.postCollection = database.getCollection("posts");
-        User.userCollection = database.getCollection("users");
-        Group.groupCollection = database.getCollection("groups");
-        Course.courseCollection = database.getCollection("courses");
     }
 }
 /*

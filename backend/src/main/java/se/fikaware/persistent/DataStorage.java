@@ -12,4 +12,10 @@ public interface DataStorage {
     boolean insertObject(PersistentObject persistentObject) throws IOException;
 
     void update(Class<? extends PersistentObject> aClass) throws IOException;
+
+    void remove(Class<? extends PersistentObject> aClass, PersistentObject persistentObject);
+
+    void deleteAll();
+
+    RootStorage getRootStorage();
 }

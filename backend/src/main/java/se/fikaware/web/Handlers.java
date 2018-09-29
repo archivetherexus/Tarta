@@ -8,10 +8,15 @@ import se.fikaware.tarta.models.Session;
 import se.fikaware.tarta.models.User;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.function.BiConsumer;
 
 @EverythingIsNonnullByDefault
 public class Handlers {
+    public interface UserHandler {
+        void handle(User u, HttpServerExchange e) throws IOException;
+    }
+
     private static @Nullable
     Session getSession(HttpServerExchange exchange) {
         String sessionID;
@@ -32,12 +37,12 @@ public class Handlers {
         return Session.continueSession(sessionID);
     }
 
-    public static HttpHandler withUser(BiConsumer<User, HttpServerExchange> handler) {
+    public static HttpHandler withUser(UserHandler handler) {
         return (exchange) -> {
             var session = getSession(exchange);
             if (session != null) {
                 if (session.user != null) {
-                    handler.accept(session.user, exchange);
+                    handler.handle(session.user, exchange);
                 } else {
                     throw new ClientError("Please login first!");
                 }
@@ -48,13 +53,13 @@ public class Handlers {
         };
     }
 
-    public static HttpHandler withAdmin(BiConsumer<User, HttpServerExchange> handler) {
+    public static HttpHandler withAdmin(UserHandler handler) {
         return (exchange) -> {
             var session = getSession(exchange);
             if (session != null) {
                 if (session.user != null) {
                     if (session.user.isAdmin) {
-                        handler.accept(session.user, exchange);
+                        handler.handle(session.user, exchange);
                     } else {
                         throw new ClientError("You're not an admin!");
                     }
