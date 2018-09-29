@@ -95,7 +95,7 @@ public class App {
                     Response.json(req, writer -> {
                         writer.writeArrayBegin();
                         Iterator<String> i = list.iterator();
-                        while(i.hasNext()) {
+                        while (i.hasNext()) {
                             writer.writeString(i.next());
                             if (i.hasNext()) {
                                 writer.writeArrayNext();
@@ -110,8 +110,8 @@ public class App {
                 .get("/user/name", Handlers.withUser(UserPage::name))
                 .get("/posts/feed/get", Handlers.withUser(PostsPage::feedGet))
                 .post("/posts/create", Handlers.withAdmin(PostsPage::create))
-                .get("/admin/school/create", AdminPage::schoolCreate)
-                .get("/admin/school/list", AdminPage::schoolList)
+                .get("/admin/school/create", Handlers.withAdmin(AdminPage::schoolCreate))
+                .get("/admin/school/list", Handlers.withAdmin(AdminPage::schoolList))
                 .get("/admin/school/get", Handlers.withAdmin(AdminPage::schoolGet))
                 .get("/admin/school/delete", Handlers.withAdmin(AdminPage::schoolDelete))
                 .get("/admin/school/group/list", Handlers.withAdmin(AdminPage::schoolGroupList))
@@ -119,7 +119,7 @@ public class App {
                 .get("/admin/school/course/create", Handlers.withAdmin(AdminPage::schoolCourseCreate))
                 .get("/admin/school/course/list", Handlers.withAdmin(AdminPage::schoolCourseList))
                 .get("/admin/user/create", Handlers.withAdmin(AdminPage::userCreate))
-                .get("/admin/user/list", AdminPage::userList)
+                .get("/admin/user/list", Handlers.withAdmin(AdminPage::userList))
                 .get("/group/list/get", Handlers.withUser(GroupPage::listGet))
                 .get("/reset", Handlers.withAdmin(AdminPage::reset))
                 .start();

@@ -104,7 +104,7 @@ public class Syncer {
             var iterator = ((Collection)o).iterator();
             if (iterator.hasNext()) {
                 write(i, iterator.next());
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     i.writeArrayNext();
                     write(i, iterator.next());
                 }
@@ -119,7 +119,7 @@ public class Syncer {
                 var entry = iterator.next();
                 i.writeMapKey(entry.getKey().toString());
                 write(i, entry.getValue());
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     i.writeMapNext();
                     entry = iterator.next();
                     i.writeMapKey(entry.getKey().toString());

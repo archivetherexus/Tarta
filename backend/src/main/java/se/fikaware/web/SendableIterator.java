@@ -15,7 +15,7 @@ public final class SendableIterator <T extends Sendable> implements Sendable {
     @Override
     public void send(ExtendedDataWriter writer) throws IOException {
         writer.writeArrayBegin();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             iterator.next().send(writer);
             if (iterator.hasNext()) {
                 writer.writeArrayNext();

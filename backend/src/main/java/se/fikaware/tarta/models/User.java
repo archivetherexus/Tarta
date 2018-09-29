@@ -3,6 +3,7 @@ package se.fikaware.tarta.models;
 import se.fikaware.persistent.*;
 import se.fikaware.sync.Syncable;
 import se.fikaware.web.Sendable;
+import se.fikaware.web.Server;
 
 import java.io.IOException;
 import java.util.*;
@@ -30,6 +31,9 @@ public class User extends PersistentObject implements Sendable {
 
     public User(DataStorage storage, DataReader reader) {
         super(storage);
+        if (storage != Server.getInstance().miscStorage) {
+            throw new RuntimeException("Users should only exist in the _misc storage!");
+        }
         username = reader.readString();
         password = reader.readString();
         isAdmin = reader.readBoolean();

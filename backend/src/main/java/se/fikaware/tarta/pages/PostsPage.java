@@ -11,12 +11,14 @@ import se.fikaware.web.Response;
 import se.fikaware.web.SendableIterator;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class PostsPage {
 
     public static void feedGet(User user, HttpServerExchange exchange) {
-        var userGroup = user.schools.get(0).schoolStorage.getAll(Group.class).filter(g -> g.members.contains(user));
-        Response.json(exchange, new SendableIterator<>(user.schools.get(0).schoolStorage.getAll(Post.class).filter(p -> userGroup.anyMatch(g -> g == p.recipient)).iterator()));
+        var userGroup = user.schools.get(0).schoolStorage.getAll(Group.class).stream().filter(g -> g.members.contains(user)).collect(Collectors.toList());
+        Response.json(exchange, new SendableIterator<>(user.schools.get(0).schoolStorage.getAll(Post.class).stream().filter(p -> userGroup.stream().anyMatch(g -> g == p.recipient)).iterator()));
     }
 
     public static void create(User user, HttpServerExchange exchange) throws IOException {
@@ -32,6 +34,7 @@ public class PostsPage {
         } else {
             new Post(school, title, content, school.schoolStorage.getObject(Group.class, recipientSlugName));
             // TODO: Post a notification for all client.
+            Response.ok(exchange);
         }
     }
 }

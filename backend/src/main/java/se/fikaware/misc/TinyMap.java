@@ -125,7 +125,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             return value;
         } else {
             var entry = first;
-            while(entry.next != null) {
+            while (entry.next != null) {
                 if (key == null ? entry.next.key == null : key.equals(entry.next.key)) {
                     var value = entry.next.value;
                     entry.next = entry.next.next;
@@ -225,14 +225,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && c.contains(first)) {
+                while (first != null && c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -245,14 +245,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && !c.contains(first)) {
+                while (first != null && !c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && !c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && !c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -265,7 +265,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
-                while(entry != null) {
+                while (entry != null) {
                     if (!c.contains(entry)) {
                         return false;
                     }
@@ -363,14 +363,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && c.contains(first)) {
+                while (first != null && c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -383,14 +383,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && !c.contains(first)) {
+                while (first != null && !c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && !c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && !c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -403,7 +403,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
-                while(entry != null) {
+                while (entry != null) {
                     if (!c.contains(entry)) {
                         return false;
                     }
@@ -506,14 +506,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean removeAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && c.contains(first)) {
+                while (first != null && c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -526,14 +526,14 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean retainAll(@Nonnull Collection c) {
                 var hasChanged = false;
-                while(first != null && !c.contains(first)) {
+                while (first != null && !c.contains(first)) {
                     first = first.next;
                     entries--;
                     hasChanged = true;
                 }
                 var entry = first;
-                while(entry != null) {
-                    while(entry.next != null && !c.contains(entry.next)) {
+                while (entry != null) {
+                    while (entry.next != null && !c.contains(entry.next)) {
                         entry.next = entry.next.next;
                         entries--;
                         hasChanged = true;
@@ -546,7 +546,7 @@ public class TinyMap<K, V> implements Map<K, V> {
             @Override
             public boolean containsAll(@Nonnull Collection c) {
                 var entry = first;
-                while(entry != null) {
+                while (entry != null) {
                     if (!c.contains(entry)) {
                         return false;
                     }

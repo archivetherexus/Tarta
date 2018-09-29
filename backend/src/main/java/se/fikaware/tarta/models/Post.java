@@ -1,19 +1,11 @@
 package se.fikaware.tarta.models;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
 import se.fikaware.persistent.*;
-import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 import se.fikaware.web.Sendable;
-import se.fikaware.web.SendableIterator;
+import se.fikaware.web.Server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Syncable
 public class Post extends PersistentObject implements Sendable {
@@ -36,7 +28,7 @@ public class Post extends PersistentObject implements Sendable {
         super(storage);
         title = reader.readString();
         content = reader.readString();
-        school = storage.getObject(School.class, reader.readString());
+        school = Server.getInstance().miscStorage.getObject(School.class, reader.readString());
         recipient = storage.getObject(Group.class, reader.readString());
     }
 

@@ -35,11 +35,17 @@ class Admin extends Component<{
     }
 
     fetchSchools() {
-        fetchHTTP<[School]>('http://localhost:3000/admin/school/list').then(schools => this.setState({schools}));
+        let { session } = this.props;
+        fetchHTTP<[School]>('http://localhost:3000/admin/school/list', {
+            sessionID: session,
+        }).then(schools => this.setState({schools}));
     }
 
     fetchUsers() {
-        fetchHTTP<[User]>('http://localhost:3000/admin/user/list').then(users => this.setState({users}))
+        let { session } = this.props;
+        fetchHTTP<[User]>('http://localhost:3000/admin/user/list', {
+            sessionID: session,
+        }).then(users => this.setState({users}))
     }
 
     schoolNameRef: HTMLInputElement | null = null;
@@ -47,11 +53,13 @@ class Admin extends Component<{
     passwordRef: HTMLInputElement | null = null;
 
     onNewSchoolSubmit() {
+        let { session } = this.props;
         if (this.schoolNameRef != null) {
             let schoolName = this.schoolNameRef.value;
             
             fetchHTTP('http://localhost:3000/admin/school/create', {
                 name: schoolName,
+                sessionID: session,
             }).then(() => this.fetchSchools());
         }
     }

@@ -1,12 +1,12 @@
 package se.fikaware.persistent;
 
 import java.io.IOException;
-import java.util.stream.Stream;
+import java.util.Collection;
 
 public interface DataStorage {
     <T extends PersistentObject> T getObject(Class<T> type, Object key);
 
-    <T extends PersistentObject> Stream<T> getAll(Class<T> type);
+    <T extends PersistentObject> Collection<T> getAll(Class<T> type);
 
 
     boolean insertObject(PersistentObject persistentObject) throws IOException;

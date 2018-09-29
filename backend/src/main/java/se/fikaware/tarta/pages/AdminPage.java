@@ -1,7 +1,6 @@
 package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
-import org.bson.Document;
 import se.fikaware.tarta.models.*;
 import se.fikaware.web.*;
 
@@ -9,20 +8,20 @@ import java.io.IOException;
 
 public class AdminPage {
 
-    public static void schoolCreate(HttpServerExchange exchange) throws IOException {
+    public static void schoolCreate(User user, HttpServerExchange exchange) throws IOException {
         var schoolName = exchange.getQueryParameters().get("name").getFirst();
         System.out.println("School Name: " + schoolName);
         new School(schoolName);
         Response.ok(exchange);
     }
 
-    public static void schoolList(HttpServerExchange exchange) {
+    public static void schoolList(User user, HttpServerExchange exchange) {
         var schools = Server.getInstance().miscStorage.getAll(School.class);
         schools.forEach(s -> System.out.println("Name: " + s.schoolName));
         Response.json(exchange, new SendableIterator<>(schools.iterator()));
     }
 
-    public static void userList(HttpServerExchange exchange) {
+    public static void userList(User user, HttpServerExchange exchange) {
         Response.json(exchange, new SendableIterator<>(Server.getInstance().miscStorage.getAll(User.class).iterator()));
     }
 
@@ -86,7 +85,7 @@ public class AdminPage {
         Group.groupCollection.deleteMany(all);*/
 
         var school = new School("Test School");
-        var a = new User(school, "a", "a");
+        var a = new User(school, "adminAC", "a");
         a.isAdmin = true;
         a.save();
 

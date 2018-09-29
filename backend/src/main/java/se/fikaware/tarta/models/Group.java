@@ -1,18 +1,11 @@
 package se.fikaware.tarta.models;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Updates;
-import org.bson.Document;
-import org.bson.types.ObjectId;
 import se.fikaware.persistent.*;
-import se.fikaware.sync.Name;
 import se.fikaware.sync.Syncable;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.mongodb.client.model.Filters;
 import se.fikaware.web.Sendable;
 import se.fikaware.web.Server;
 
@@ -25,14 +18,17 @@ public class Group extends PersistentObject implements Sendable {
 
     public Group(DataStorage storage, DataReader dr) {
         super(storage);
+        if (storage == Server.getInstance().miscStorage) {
+            throw new RuntimeException("Groups should not exists inside of the _misc storage!");
+        }
         slugName = dr.readString();
         name = dr.readString();
         school = storage.getObject(School.class, dr.readString());
         members = new LinkedList<>();
         int c = dr.readInt();
         for (int i = 0; i < c; i++) {
-            int id = dr.readInt();
-            members.add(storage.getObject(User.class, id));
+            String username = dr.readString();
+            members.add(Server.getInstance().miscStorage.getObject(User.class, username));
         }
     }
 
@@ -58,6 +54,7 @@ public class Group extends PersistentObject implements Sendable {
         writer.writeString(slugName);
         writer.writeString(name);
         writer.writeString(school.slugName);
+        writer.writeInt(members.size());
         for (User member: members) {
             writer.writeString(member.username);
         }

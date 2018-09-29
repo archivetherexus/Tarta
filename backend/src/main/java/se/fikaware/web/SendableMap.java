@@ -20,6 +20,7 @@ public class SendableMap<T> implements Sendable {
         Iterator<Map.Entry<String, T>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, T> set = iterator.next();
+            writer.writeMapKey(set.getKey());
             Object value = set.getValue();
             if (value instanceof Sendable) {
                 ((Sendable)value).send(writer);

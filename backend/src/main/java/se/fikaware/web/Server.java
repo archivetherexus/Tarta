@@ -13,6 +13,7 @@ import se.fikaware.persistent.DataStorage;
 import se.fikaware.persistent.RootStorage;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.logging.*;
 
 @EverythingIsNonnullByDefault
@@ -35,6 +36,8 @@ public class Server {
     private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(Server.class);
+
+    // TODO: Add Whitelist and Blacklist middle-layer for the Storages...
 
     public Server post(String path, HttpHandler handler) {
         routes.post(path, new EagerFormParsingHandler(exchange -> {
@@ -82,8 +85,11 @@ public class Server {
         instance = this;
         setupLogger();
         RootStorage storage = new RootStorage((s, name) -> new CommaSeparatedStorage(s, "tarta/" + name));
-        miscStorage = storage.getStorage("_misc");
-
+        try {
+            miscStorage = storage.getStorage("_misc");
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load _misc, reason:\n" + e);
+        }
     }
 
     public void start() {

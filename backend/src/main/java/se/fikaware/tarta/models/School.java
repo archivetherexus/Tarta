@@ -1,9 +1,6 @@
 package se.fikaware.tarta.models;
 
-import se.fikaware.persistent.DataStorage;
-import se.fikaware.persistent.DataWriter;
-import se.fikaware.persistent.ExtendedDataWriter;
-import se.fikaware.persistent.PersistentObject;
+import se.fikaware.persistent.*;
 import se.fikaware.web.Sendable;
 import se.fikaware.web.Server;
 
@@ -18,10 +15,22 @@ public class School extends PersistentObject implements Sendable {
     public School(String schoolName) throws IOException {
         super(Server.getInstance().miscStorage); // TODO: Hmmmm.....
         this.slugName = createSlug(createSlug(schoolName));
-        schoolStorage = getDataStorage().getRootStorage().getStorage(slugName);
         this.schoolName = schoolName;
         this.freePostID = 0;
         this.save();
+        schoolStorage = getDataStorage().getRootStorage().getStorage(slugName);
+        new Group(this, schoolName);
+    }
+
+    public School(DataStorage storage, DataReader r) throws IOException {
+        super(storage);
+        if (storage != Server.getInstance().miscStorage) {
+            throw new RuntimeException("Schools should only exist in the _misc storage!");
+        }
+        slugName = r.readString();
+        schoolName = r.readString();
+        freePostID = r.readInt();
+        schoolStorage = storage.getRootStorage().getStorage(slugName);
     }
 
     private static String createSlug(String schoolName) {
