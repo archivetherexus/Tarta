@@ -1,6 +1,6 @@
 package se.fikaware.tarta.models;
 
-import se.fikaware.persistent.*;
+import se.fikaware.database.*;
 import se.fikaware.web.Sendable;
 import se.fikaware.web.Server;
 
@@ -9,8 +9,8 @@ import java.io.IOException;
 public class School extends PersistentObject implements Sendable {
     public final String slugName;
     public final String schoolName;
-    public int freePostID;
     public final DataStorage schoolStorage;
+    public int freePostID;
 
     public School(String schoolName) throws IOException {
         super(Server.getInstance().miscStorage); // TODO: Hmmmm.....

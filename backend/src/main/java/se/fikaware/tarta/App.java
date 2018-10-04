@@ -1,6 +1,6 @@
 package se.fikaware.tarta;
 
-import se.fikaware.persistent.*;
+import se.fikaware.database.*;
 import se.fikaware.tarta.pages.AdminPage;
 import se.fikaware.tarta.pages.GroupPage;
 import se.fikaware.tarta.pages.PostsPage;
@@ -17,43 +17,6 @@ import java.util.List;
 
 public class App {
 
-    public static class TestObject extends PersistentObject {
-        String name;
-        int age;
-        boolean isCat;
-
-        public TestObject(DataStorage owner, DataReader r) {
-            super(owner);
-            name = r.readString();
-            age = r.readInt();
-            isCat = r.readBoolean();
-        }
-
-        TestObject(CommaSeparatedStorage owner, String name, int age, boolean isCat) {
-            super(owner);
-            this.name = name;
-            this.age = age;
-            this.isCat = isCat;
-        }
-
-        @Override
-        protected void write(DataWriter writer) throws IOException {
-            writer.writeString(name);
-            writer.writeInt(age);
-            writer.writeBoolean(isCat);
-        }
-
-        void bark() {
-            System.out.println(
-                    (isCat ? "Nyaa! " : "Woof woof! ") +
-                            "my name is: " +
-                            name +
-                            " and I am " + age +
-                            " years old!"
-            );
-        }
-    }
-
     public static void main(final String[] args) {
         try {
             CommaSeparatedStorage storage = new CommaSeparatedStorage(null, "test-school");
@@ -66,7 +29,7 @@ public class App {
 
             TestObject obj = new TestObject(storage, "Momo" + Calendar.getInstance().getTimeInMillis(), 21, true);
 
-                obj.save();
+            obj.save();
 
 
             System.out.println("--- Round 3 ---");
@@ -123,5 +86,42 @@ public class App {
                 .get("/group/list/get", Handlers.withUser(GroupPage::listGet))
                 .get("/reset", Handlers.withAdmin(AdminPage::reset))
                 .start();
+    }
+
+    public static class TestObject extends PersistentObject {
+        String name;
+        int age;
+        boolean isCat;
+
+        public TestObject(DataStorage owner, DataReader r) {
+            super(owner);
+            name = r.readString();
+            age = r.readInt();
+            isCat = r.readBoolean();
+        }
+
+        TestObject(CommaSeparatedStorage owner, String name, int age, boolean isCat) {
+            super(owner);
+            this.name = name;
+            this.age = age;
+            this.isCat = isCat;
+        }
+
+        @Override
+        protected void write(DataWriter writer) throws IOException {
+            writer.writeString(name);
+            writer.writeInt(age);
+            writer.writeBoolean(isCat);
+        }
+
+        void bark() {
+            System.out.println(
+                    (isCat ? "Nyaa! " : "Woof woof! ") +
+                            "my name is: " +
+                            name +
+                            " and I am " + age +
+                            " years old!"
+            );
+        }
     }
 }

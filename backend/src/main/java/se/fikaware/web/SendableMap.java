@@ -1,6 +1,6 @@
 package se.fikaware.web;
 
-import se.fikaware.persistent.ExtendedDataWriter;
+import se.fikaware.database.ExtendedDataWriter;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -23,7 +23,7 @@ public class SendableMap<T> implements Sendable {
             writer.writeMapKey(set.getKey());
             Object value = set.getValue();
             if (value instanceof Sendable) {
-                ((Sendable)value).send(writer);
+                ((Sendable) value).send(writer);
             } else if (value instanceof String) {
                 writer.writeString((String) value);
             } else {

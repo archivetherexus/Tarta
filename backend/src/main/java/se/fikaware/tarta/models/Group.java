@@ -1,15 +1,13 @@
 package se.fikaware.tarta.models;
 
-import se.fikaware.persistent.*;
-import se.fikaware.sync.Syncable;
-
-import java.io.IOException;
-import java.util.*;
-
+import se.fikaware.database.*;
 import se.fikaware.web.Sendable;
 import se.fikaware.web.Server;
 
-@Syncable
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Group extends PersistentObject implements Sendable {
     public String slugName;
     public String name;
@@ -55,7 +53,7 @@ public class Group extends PersistentObject implements Sendable {
         writer.writeString(name);
         writer.writeString(school.slugName);
         writer.writeInt(members.size());
-        for (User member: members) {
+        for (User member : members) {
             writer.writeString(member.username);
         }
     }

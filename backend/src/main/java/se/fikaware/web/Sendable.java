@@ -1,6 +1,6 @@
 package se.fikaware.web;
 
-import se.fikaware.persistent.ExtendedDataWriter;
+import se.fikaware.database.ExtendedDataWriter;
 
 import java.io.IOException;
 

@@ -2,9 +2,7 @@ package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormDataParser;
-
 import org.slf4j.LoggerFactory;
-
 import se.fikaware.misc.TinyMap;
 import se.fikaware.tarta.models.Session;
 import se.fikaware.tarta.models.User;
@@ -12,8 +10,6 @@ import se.fikaware.web.Request;
 import se.fikaware.web.Response;
 import se.fikaware.web.SendableMap;
 import se.fikaware.web.Server;
-
-import java.util.Map;
 
 public class UserPage {
     public static void login(HttpServerExchange exchange) {

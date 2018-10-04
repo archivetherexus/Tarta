@@ -2,8 +2,8 @@ package se.fikaware.web;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
+import se.fikaware.database.json.JsonWriter;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
-import se.fikaware.sync.json.JsonWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

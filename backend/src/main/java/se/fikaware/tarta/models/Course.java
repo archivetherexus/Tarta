@@ -1,12 +1,10 @@
 package se.fikaware.tarta.models;
 
-import se.fikaware.persistent.*;
-import se.fikaware.sync.Syncable;
+import se.fikaware.database.*;
 import se.fikaware.web.Sendable;
 
 import java.io.IOException;
 
-@Syncable
 public class Course extends PersistentObject implements Sendable {
     public String slugName;
     public String courseName;

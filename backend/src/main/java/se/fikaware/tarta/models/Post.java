@@ -1,18 +1,16 @@
 package se.fikaware.tarta.models;
 
-import se.fikaware.persistent.*;
-import se.fikaware.sync.Syncable;
+import se.fikaware.database.*;
 import se.fikaware.web.Sendable;
 import se.fikaware.web.Server;
 
 import java.io.IOException;
 
-@Syncable
 public class Post extends PersistentObject implements Sendable {
     public String title;
     public String content;
-    School school;
     public Group recipient;
+    School school;
 
 
     public Post(School school, String title, String content, Group recipient) throws IOException {

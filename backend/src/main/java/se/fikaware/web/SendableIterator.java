@@ -1,11 +1,11 @@
 package se.fikaware.web;
 
-import se.fikaware.persistent.ExtendedDataWriter;
+import se.fikaware.database.ExtendedDataWriter;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-public final class SendableIterator <T extends Sendable> implements Sendable {
+public final class SendableIterator<T extends Sendable> implements Sendable {
     private final Iterator<T> iterator;
 
     public SendableIterator(Iterator<T> iterator) {

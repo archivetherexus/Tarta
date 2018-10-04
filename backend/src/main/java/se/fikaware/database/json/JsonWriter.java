@@ -1,15 +1,15 @@
-package se.fikaware.sync.json;
+package se.fikaware.database.json;
 
-import se.fikaware.persistent.ExtendedDataWriter;
+import se.fikaware.database.ExtendedDataWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class JsonWriter implements ExtendedDataWriter {
-    private OutputStream outputStream;
     static final private byte[] nullBytes = "null".getBytes();
     static final private byte[] trueBytes = "true".getBytes();
     static final private byte[] falseBytes = "false".getBytes();
+    private OutputStream outputStream;
 
     public JsonWriter(OutputStream outputStream) {
         this.outputStream = outputStream;
@@ -23,7 +23,7 @@ public class JsonWriter implements ExtendedDataWriter {
     @Override
     public void writeString(String s) throws IOException {
         outputStream.write('"');
-        for (var c: s.getBytes()) {
+        for (var c : s.getBytes()) {
             if (c == '"' || c == '\\') {
                 outputStream.write('\\');
             }

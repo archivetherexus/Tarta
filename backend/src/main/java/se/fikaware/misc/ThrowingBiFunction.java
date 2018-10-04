@@ -1,6 +1,6 @@
 package se.fikaware.misc;
 
 @FunctionalInterface
-public interface ThrowingBiFunction<T, U, R, E extends Throwable>  {
+public interface ThrowingBiFunction<T, U, R, E extends Throwable> {
     R apply(T t, U u) throws E;
 }

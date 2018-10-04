@@ -9,14 +9,9 @@ import se.fikaware.tarta.models.User;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.function.BiConsumer;
 
 @EverythingIsNonnullByDefault
 public class Handlers {
-    public interface UserHandler {
-        void handle(User u, HttpServerExchange e) throws IOException;
-    }
-
     private static @Nullable
     Session getSession(HttpServerExchange exchange) {
         String sessionID;
@@ -70,5 +65,9 @@ public class Handlers {
                 throw new ClientError("Invalid session id! Please login again.");
             }
         };
+    }
+
+    public interface UserHandler {
+        void handle(User u, HttpServerExchange e) throws IOException;
     }
 }

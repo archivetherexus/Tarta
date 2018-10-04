@@ -1,4 +1,4 @@
-package se.fikaware.persistent;
+package se.fikaware.database;
 
 
 import se.fikaware.misc.ThrowingBiFunction;

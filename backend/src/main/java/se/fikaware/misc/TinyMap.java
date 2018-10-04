@@ -1,44 +1,14 @@
 package se.fikaware.misc;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.lang.UnsupportedOperationException;
-import javax.annotation.Nonnull;
 
 public class TinyMap<K, V> implements Map<K, V> {
-    private class TinyMapEntry implements Entry<K, V> {
-        K key;
-        V value;
-        TinyMapEntry next;
-
-        TinyMapEntry(K key, V value, TinyMapEntry next) {
-            this.key = key;
-            this.value = value;
-            this.next = next;
-        }
-
-        @Override
-        public K getKey() {
-            return this.key;
-        }
-
-        @Override
-        public V getValue() {
-            return this.value;
-        }
-
-        @Override
-        public V setValue(V value) {
-            this.value = value;
-            return value;
-        }
-    }
-
     private int entries = 0;
-
     private TinyMapEntry first = null;
 
     private TinyMapEntry findEntry(Object key) {
@@ -104,8 +74,8 @@ public class TinyMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-       var entry = findEntry(key);
-       return entry == null ? null : entry.value;
+        var entry = findEntry(key);
+        return entry == null ? null : entry.value;
     }
 
     @Override
@@ -140,7 +110,7 @@ public class TinyMap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(@Nonnull Map<? extends K, ? extends V> m) {
-        for (var entry: m.entrySet()) {
+        for (var entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
@@ -152,7 +122,8 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public @Nonnull Set<K> keySet() {
+    public @Nonnull
+    Set<K> keySet() {
         return new Set<>() {
 
             @Override
@@ -171,7 +142,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull Iterator<K> iterator() {
+            public @Nonnull
+            Iterator<K> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -275,7 +247,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+            public @Nonnull
+            <T> T[] toArray(@Nonnull T[] a) {
                 @SuppressWarnings("unchecked")
                 var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
                 var entry = first;
@@ -291,7 +264,8 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public @Nonnull Collection<V> values() {
+    public @Nonnull
+    Collection<V> values() {
         return new Collection<>() {
             @Override
             public int size() {
@@ -309,7 +283,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull Iterator<V> iterator() {
+            public @Nonnull
+            Iterator<V> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -413,7 +388,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+            public @Nonnull
+            <T> T[] toArray(@Nonnull T[] a) {
                 @SuppressWarnings("unchecked")
                 var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
                 var entry = first;
@@ -429,7 +405,8 @@ public class TinyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public @Nonnull Set<Entry<K, V>> entrySet() {
+    public @Nonnull
+    Set<Entry<K, V>> entrySet() {
         return new Set<>() {
 
             @Override
@@ -448,7 +425,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull Iterator<Entry<K, V>> iterator() {
+            public @Nonnull
+            Iterator<Entry<K, V>> iterator() {
                 return new Iterator<>() {
                     TinyMapEntry entry = null;
 
@@ -491,7 +469,7 @@ public class TinyMap<K, V> implements Map<K, V> {
 
             @Override
             public boolean addAll(@Nonnull Collection<? extends Entry<K, V>> c) {
-                for (var e: c) {
+                for (var e : c) {
                     TinyMap.this.put(e.getKey(), e.getValue());
                 }
                 return true;
@@ -556,7 +534,8 @@ public class TinyMap<K, V> implements Map<K, V> {
             }
 
             @Override
-            public @Nonnull <T> T[] toArray(@Nonnull T[] a) {
+            public @Nonnull
+            <T> T[] toArray(@Nonnull T[] a) {
                 @SuppressWarnings("unchecked")
                 var array = a.length >= entries ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), entries);
                 var entry = first;
@@ -569,5 +548,33 @@ public class TinyMap<K, V> implements Map<K, V> {
                 return array;
             }
         };
+    }
+
+    private class TinyMapEntry implements Entry<K, V> {
+        K key;
+        V value;
+        TinyMapEntry next;
+
+        TinyMapEntry(K key, V value, TinyMapEntry next) {
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+
+        @Override
+        public K getKey() {
+            return this.key;
+        }
+
+        @Override
+        public V getValue() {
+            return this.value;
+        }
+
+        @Override
+        public V setValue(V value) {
+            this.value = value;
+            return value;
+        }
     }
 }

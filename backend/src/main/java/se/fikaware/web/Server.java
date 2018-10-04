@@ -5,12 +5,11 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import io.undertow.util.HttpString;
-
 import org.slf4j.LoggerFactory;
+import se.fikaware.database.CommaSeparatedStorage;
+import se.fikaware.database.DataStorage;
+import se.fikaware.database.RootStorage;
 import se.fikaware.misc.EverythingIsNonnullByDefault;
-import se.fikaware.persistent.CommaSeparatedStorage;
-import se.fikaware.persistent.DataStorage;
-import se.fikaware.persistent.RootStorage;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -19,8 +18,25 @@ import java.util.logging.*;
 @EverythingIsNonnullByDefault
 public class Server {
 
+    private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
     @Nullable
     private static Server instance = null;
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(Server.class);
+    public final DataStorage miscStorage;
+    private RoutingHandler routes = new RoutingHandler();
+
+    public Server() {
+        instance = this;
+        setupLogger();
+        RootStorage storage = new RootStorage((s, name) -> new CommaSeparatedStorage(s, "tarta/" + name));
+        try {
+            miscStorage = storage.getStorage("_misc");
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load _misc, reason:\n" + e);
+        }
+    }
+
+    // TODO: Add Whitelist and Blacklist middle-layer for the Storages...
 
     public static Server getInstance() {
         if (instance == null) {
@@ -29,15 +45,30 @@ public class Server {
         return instance;
     }
 
-    public final DataStorage miscStorage;
+    private static void setupLogger() {
+        var formatter = new Formatter() {
 
-    private RoutingHandler routes = new RoutingHandler();
+            @Override
+            public String format(LogRecord record) {
+                return "[" + record.getLoggerName() + "] " + record.getMessage() + "\n";
+            }
+        };
 
-    private static final HttpString ACCESS_CONTROL_ALLOW_ORIGIN = new HttpString("Access-Control-Allow-Origin");
+        Logger logger = Logger.getLogger("");
+        logger.setLevel(Level.ALL);
+        Handler[] handlers = logger.getHandlers();
+        for (Handler handler : handlers) {
+            handler.setFormatter(formatter);
+        }
+    }
 
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(Server.class);
-
-    // TODO: Add Whitelist and Blacklist middle-layer for the Storages...
+    private static void setupWebServer(HttpHandler routes) {
+        Undertow server = Undertow.builder()
+                .addHttpListener(3000, "localhost")
+                .setHandler(routes)
+                .build();
+        server.start();
+    }
 
     public Server post(String path, HttpHandler handler) {
         routes.post(path, new EagerFormParsingHandler(exchange -> {
@@ -50,7 +81,7 @@ public class Server {
             } catch (BadRequest b) {
                 exchange.setStatusCode(400);
                 logger.error(b.getMessage());
-            } catch(Throwable r) {
+            } catch (Throwable r) {
                 exchange.setStatusCode(500);
                 r.printStackTrace();
             }
@@ -69,7 +100,7 @@ public class Server {
             } catch (BadRequest b) {
                 exchange.setStatusCode(400);
                 logger.error(b.getMessage());
-            } catch(Throwable r) {
+            } catch (Throwable r) {
                 exchange.setStatusCode(500);
                 r.printStackTrace();
             } finally {
@@ -81,44 +112,8 @@ public class Server {
         return this;
     }
 
-    public Server() {
-        instance = this;
-        setupLogger();
-        RootStorage storage = new RootStorage((s, name) -> new CommaSeparatedStorage(s, "tarta/" + name));
-        try {
-            miscStorage = storage.getStorage("_misc");
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load _misc, reason:\n" + e);
-        }
-    }
-
     public void start() {
         setupWebServer(routes);
-    }
-
-    private static void setupLogger() {
-        var formatter = new Formatter() {
-
-            @Override
-            public String format(LogRecord record) {
-                return "[" + record.getLoggerName() + "] " + record.getMessage() + "\n";
-            }
-        };
-
-        Logger logger = Logger.getLogger("");
-        logger.setLevel(Level.ALL);
-        Handler[] handlers = logger.getHandlers();
-        for (Handler handler: handlers) {
-            handler.setFormatter(formatter);
-        }
-    }
-
-    private static void setupWebServer(HttpHandler routes) {
-        Undertow server = Undertow.builder()
-                .addHttpListener(3000, "localhost")
-                .setHandler(routes)
-                .build();
-        server.start();
     }
 }
 /*

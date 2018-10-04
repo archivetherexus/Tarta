@@ -1,4 +1,4 @@
-package se.fikaware.persistent;
+package se.fikaware.database;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -12,91 +12,12 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class CommaSeparatedStorage implements DataStorage {
-    class SimpleDataReader implements DataReader {
-        private int index = 0;
-        Object key = null;
-        private final String []csvData;
-
-        SimpleDataReader(String []csvData) {
-            this.csvData = csvData;
-        }
-
-        @Override
-        public String readString() {
-            String value = csvData[index++];
-            if (key == null) {
-                key = value;
-            }
-            return value;
-        }
-
-        @Override
-        public boolean readBoolean() {
-            boolean value = Boolean.parseBoolean(csvData[index++]);
-            if (key == null) {
-                key = value;
-            }
-            return value;
-        }
-
-        @Override
-        public int readInt() {
-            int value = Integer.parseInt(csvData[index++]);
-            if (key == null) {
-                key = value;
-                return value;
-            }
-            return value;
-        }
-    }
-
-    class SimpleDataWriter implements DataWriter {
-        final StringBuilder builder = new StringBuilder();
-        Object key = null;
-
-        @Override
-        public void writeString(String value) {
-            if (key == null) {
-                key = value;
-            }
-            builder.append(value);
-            builder.append(',');
-        }
-
-        @Override
-        public void writeBoolean(boolean value) {
-            if (key == null) {
-                key = value;
-            }
-            builder.append(value ? "true," : "false,");
-        }
-
-        @Override
-        public void writeInt(int value) {
-            if (key == null) {
-                key = value;
-            }
-            builder.append(Integer.toString(value));
-            builder.append(',');
-        }
-
-        @Override
-        public void writeNull() throws IOException {
-            builder.append("null,");
-        }
-    }
-
-    private static String persistentRoot = System.getenv().get("HOME") + "/pstorage";
     private static final String SEPARATOR = ",";
+    private static String persistentRoot = System.getenv().get("HOME") + "/pstorage";
     private final RootStorage rootStorage;
     private final String storageName;
     private Map<Class<? extends PersistentObject>, Map<Object, PersistentObject>> loadedObjects = new HashMap<>();
     private HashSet<Class> hasLoadedFromFile = new HashSet<>();
-
-    private <T extends PersistentObject> Map<Object, T> getLoadedObjects(Class<? extends PersistentObject> type) {
-        // noinspection unchecked
-        return (Map<Object, T>) loadedObjects.computeIfAbsent(type, k -> new HashMap<>());
-    }
 
     public CommaSeparatedStorage(RootStorage rootStorage, String storageName) throws IOException {
         this.rootStorage = rootStorage;
@@ -111,14 +32,17 @@ public class CommaSeparatedStorage implements DataStorage {
         }
     }
 
+    private <T extends PersistentObject> Map<Object, T> getLoadedObjects(Class<? extends PersistentObject> type) {
+        // noinspection unchecked
+        return (Map<Object, T>) loadedObjects.computeIfAbsent(type, k -> new HashMap<>());
+    }
+
     private Path getCategoryPath(Class<? extends PersistentObject> type) {
         return Paths.get(persistentRoot, storageName, type.getName().replace("$", "..") + ".csv");
     }
 
-    private <T extends PersistentObject> T loadObjectIntoMapFromCSV(Class<? extends PersistentObject> type, String []csvData, Map<Object, T> into) {
+    private <T extends PersistentObject> T loadObjectIntoMapFromCSV(Class<? extends PersistentObject> type, SimpleDataReader reader, Map<Object, T> into) {
         try {
-            SimpleDataReader reader = new SimpleDataReader(csvData);
-
             if (type.isMemberClass() && (type.getModifiers() & Modifier.STATIC) == 0) {
                 throw new RuntimeException("Please make " + type.getSimpleName() + " a static class");
             }
@@ -130,7 +54,7 @@ public class CommaSeparatedStorage implements DataStorage {
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not create class for category: " + type.getSimpleName() + "\n" + e);
-        } catch(InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             StringWriter out = new StringWriter();
             PrintWriter writer = new PrintWriter(out);
             writer.write("An exception occured while loading object of type: ");
@@ -160,7 +84,7 @@ public class CommaSeparatedStorage implements DataStorage {
                 new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), true), StandardCharsets.UTF_8))
                         .append(writer.builder.toString()).flush();
             } catch (IOException e) {
-                throw new RuntimeException("Could not add object to persistent memory! Type: " + type.getSimpleName());
+                throw new RuntimeException("Could not add object to database memory! Type: " + type.getSimpleName());
             }
             return true;
         } else {
@@ -170,7 +94,7 @@ public class CommaSeparatedStorage implements DataStorage {
 
     private <T extends PersistentObject> void loadObjectsFromFile(Class<T> type, Map<Object, T> into) throws FileNotFoundException, NoSuchFileException {
         try {
-            Files.lines(getCategoryPath(type)).forEach(f -> this.loadObjectIntoMapFromCSV(type, f.split(SEPARATOR), into));
+            Files.lines(getCategoryPath(type)).forEach(f -> this.loadObjectIntoMapFromCSV(type, new SimpleDataReader(f), into));
         } catch (FileNotFoundException | NoSuchFileException e) {
             throw e;
         } catch (IOException e) {
@@ -180,17 +104,21 @@ public class CommaSeparatedStorage implements DataStorage {
 
     @Override
     public <T extends PersistentObject> T getObject(Class<T> type, Object key) {
+        String keyString = key.toString();
         Map<Object, T> map = getLoadedObjects(type);
         T object = map.get(key);
         if (object == null) {
             Path path = getCategoryPath(type);
             try {
-                Stream<String[]> csvLines = Files.lines(path).map(l -> l.split(SEPARATOR));
-                Iterator<String[]> i = csvLines.iterator();
+                Stream<String> csvLines = Files.lines(path); // TODO: Perhaps we could skip to a line index using seek.
+                Iterator<String> i = csvLines.iterator();
                 while (i.hasNext()) {
-                    String[] csvLine = i.next();
-                    if (csvLine.length > 0 && csvLine[0].equals(key)) {
-                        return loadObjectIntoMapFromCSV(type, csvLine, map);
+                    SimpleDataReader reader = new SimpleDataReader(i.next());
+                    reader.readString();
+                    if (reader.key.equals(keyString)) {
+                        reader.index = 0;
+                        reader.key = null;
+                        return loadObjectIntoMapFromCSV(type, reader, map);
                     }
                 }
                 return null;
@@ -236,7 +164,7 @@ public class CommaSeparatedStorage implements DataStorage {
 
     public void update(Class<? extends PersistentObject> type) throws IOException {
         SimpleDataWriter writer = new SimpleDataWriter();
-        for (PersistentObject p: getLoadedObjects(type).values()) {
+        for (PersistentObject p : getLoadedObjects(type).values()) {
             p.write(writer);
             writer.builder.append('\n');
         }
@@ -265,5 +193,104 @@ public class CommaSeparatedStorage implements DataStorage {
     @Override
     public RootStorage getRootStorage() {
         return rootStorage;
+    }
+
+    class SimpleDataReader implements DataReader { // TODO: Support "" \, and \\
+        private final String[] csvData;
+        Object key = null;
+        private int index = 0;
+
+        SimpleDataReader(String csvData) {
+            this.csvData = csvData.split(SEPARATOR);
+        }
+
+        @Override
+        public String readString() {
+            String value = csvData[index++];
+            if (key == null) {
+                key = value;
+            }
+            return value;
+        }
+
+        @Override
+        public boolean readBoolean() {
+            boolean value = Boolean.parseBoolean(csvData[index++]);
+            if (key == null) {
+                key = value;
+            }
+            return value;
+        }
+
+        @Override
+        public int readInt() {
+            int value = Integer.parseInt(csvData[index++]);
+            if (key == null) {
+                key = value;
+                return value;
+            }
+            return value;
+        }
+    }
+
+    class SimpleDataWriter implements DataWriter {
+        final StringBuilder builder = new StringBuilder();
+        Object key = null;
+
+        @Override
+        public void writeString(String value) {
+            if (key == null) {
+                key = value;
+            }
+            // TODO: This could be optimised.
+            if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+                builder.append('"');
+                for (int i = 0; i < value.length(); i++) {
+                    char c = value.charAt(i);
+                    switch (c) {
+                        case '\n':
+                            builder.append('\\');
+                            builder.append('n');
+                            break;
+                        case '\\':
+                            builder.append('\\');
+                            builder.append('\\');
+                            break;
+                        case '"':
+                            builder.append('"');
+                            // fallthrough //
+                        default:
+                            builder.append(c);
+
+                    }
+                }
+                builder.append('"');
+            } else {
+                builder.append(value);
+            }
+            builder.append(',');
+        }
+
+        @Override
+        public void writeBoolean(boolean value) {
+            if (key == null) {
+                key = value;
+            }
+            builder.append(value ? "true," : "false,");
+        }
+
+        @Override
+        public void writeInt(int value) {
+            if (key == null) {
+                key = value;
+            }
+            builder.append(Integer.toString(value));
+            builder.append(',');
+        }
+
+        @Override
+        public void writeNull() {
+            builder.append("null,");
+        }
     }
 }

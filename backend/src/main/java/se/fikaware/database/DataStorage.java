@@ -1,4 +1,4 @@
-package se.fikaware.persistent;
+package se.fikaware.database;
 
 import java.io.IOException;
 import java.util.Collection;

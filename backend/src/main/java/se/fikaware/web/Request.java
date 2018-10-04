@@ -7,7 +7,8 @@ import javax.annotation.Nullable;
 
 @EverythingIsNonnullByDefault
 public class Request {
-    public static @Nullable String getString(FormData form, String value, @Nullable String defaultValue) {
+    public static @Nullable
+    String getString(FormData form, String value, @Nullable String defaultValue) {
         var formValue = form.getFirst(value);
         if (formValue == null) {
             return defaultValue;
