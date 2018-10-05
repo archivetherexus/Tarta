@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class PostsPage {
 
     public static void feedGet(User user, HttpServerExchange exchange) {
-        var userGroup = user.schools.get(0).schoolStorage.getAll(Group.class).stream().filter(g -> g.members.contains(user)).collect(Collectors.toList());
+        var userGroup = user.schools.get(0).schoolStorage.getAll(Group.class).stream().filter(g -> g.getMembers().contains(user)).collect(Collectors.toList());
         Response.json(exchange, new SendableIterator<>(user.schools.get(0).schoolStorage.getAll(Post.class).stream().filter(p -> userGroup.stream().anyMatch(g -> g == p.recipient)).iterator()));
     }
 

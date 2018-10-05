@@ -3,11 +3,9 @@ package se.fikaware.database;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -22,6 +20,7 @@ public class CommaSeparatedStorage implements DataStorage {
     public CommaSeparatedStorage(RootStorage rootStorage, String storageName) throws IOException {
         this.rootStorage = rootStorage;
         this.storageName = storageName;
+
         Path path = Paths.get(persistentRoot, storageName);
         if (Files.notExists(path)) {
             try {
@@ -70,7 +69,7 @@ public class CommaSeparatedStorage implements DataStorage {
     }
 
     @Override
-    public boolean insertObject(PersistentObject object) throws IOException {
+    public boolean handleInsertObject(PersistentObject object) throws IOException {
         // TODO: Duplicate same-key but different objects!
 
         Class<? extends PersistentObject> type = object.getClass();
@@ -81,10 +80,15 @@ public class CommaSeparatedStorage implements DataStorage {
             map.put(writer.key, object);
             try {
                 writer.builder.append('\n');
-                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), true), StandardCharsets.UTF_8))
+                File file = getCategoryPath(type).toFile();
+                if (!file.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.createNewFile();
+                }
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8))
                         .append(writer.builder.toString()).flush();
             } catch (IOException e) {
-                throw new RuntimeException("Could not add object to database memory! Type: " + type.getSimpleName());
+                throw new RuntimeException("Could not add object to database memory! Type: " + type.getSimpleName() + " " + e);
             }
             return true;
         } else {
@@ -162,7 +166,7 @@ public class CommaSeparatedStorage implements DataStorage {
         }
     }
 
-    public void update(Class<? extends PersistentObject> type) throws IOException {
+    public void handleUpdate(Class<? extends PersistentObject> type) throws IOException {
         SimpleDataWriter writer = new SimpleDataWriter();
         for (PersistentObject p : getLoadedObjects(type).values()) {
             p.write(writer);
@@ -172,7 +176,7 @@ public class CommaSeparatedStorage implements DataStorage {
             new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getCategoryPath(type).toFile(), false), StandardCharsets.UTF_8))
                     .append(writer.builder.toString()).flush();
         } catch (IOException e) {
-            throw new RuntimeException("Could not update objects with type:  " + type.getSimpleName());
+            throw new RuntimeException("Could not handleUpdate objects with type: " + type.getSimpleName());
         }
     }
 
@@ -183,10 +187,42 @@ public class CommaSeparatedStorage implements DataStorage {
     }
 
     @Override
-    public void deleteAll() {
+    public void remove(Class<? extends PersistentObject> aClass) throws IOException {
+        getLoadedObjects(aClass).clear();
+        FileChannel.open(getCategoryPath(aClass), StandardOpenOption.WRITE).truncate(0).close();
+    }
+
+    @Override
+    public void remove() {
+        loadedObjects.clear();
+        File directory = Paths.get(persistentRoot, storageName).toFile();
+        if (directory.exists()) {
+            String[] children = directory.list();
+            for (int i = 0; i < children.length; i++) {
+                deleteFileSystemEntry(new File(directory, children[i]));
+            }
+        }
+    }
+
+    private void deleteFileSystemEntry(File directory) {
+        if (directory.isDirectory())
+        {
+            String[] children = directory.list();
+            if (children == null) {
+                return;
+            }
+            for (int i = 0; i < children.length; i++) {
+                deleteFileSystemEntry(new File(directory, children[i]));
+            }
+        }
+        directory.delete();
+    }
+
+    @Override
+    public void handleDelete() {
         File file = Paths.get(persistentRoot, storageName).toFile();
-        if (file != null) {
-            file.delete();
+        if (file.exists()) {
+            deleteFileSystemEntry(file);
         }
     }
 

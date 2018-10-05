@@ -19,6 +19,9 @@ public class App {
 
     public static void main(final String[] args) {
         try {
+            // TODO: Add a read method to PersistentObjects so that they can have loops. So we load object and put it into the map first.
+            // then call read on it...
+
             CommaSeparatedStorage storage = new CommaSeparatedStorage(null, "test-school");
 
             System.out.println("--- Round 1 ---");

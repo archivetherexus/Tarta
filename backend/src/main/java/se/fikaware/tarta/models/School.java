@@ -10,16 +10,17 @@ public class School extends PersistentObject implements Sendable {
     public final String slugName;
     public final String schoolName;
     public final DataStorage schoolStorage;
+    public final Group group;
     public int freePostID;
 
     public School(String schoolName) throws IOException {
         super(Server.getInstance().miscStorage); // TODO: Hmmmm.....
-        this.slugName = createSlug(createSlug(schoolName));
+        this.slugName = createSlug(schoolName);
         this.schoolName = schoolName;
         this.freePostID = 0;
         this.save();
         schoolStorage = getDataStorage().getRootStorage().getStorage(slugName);
-        new Group(this, schoolName);
+        group = new Group(this, schoolName);
     }
 
     public School(DataStorage storage, DataReader r) throws IOException {
@@ -31,6 +32,7 @@ public class School extends PersistentObject implements Sendable {
         schoolName = r.readString();
         freePostID = r.readInt();
         schoolStorage = storage.getRootStorage().getStorage(slugName);
+        group = schoolStorage.getObject(Group.class, slugName);
     }
 
     private static String createSlug(String schoolName) {
@@ -46,7 +48,7 @@ public class School extends PersistentObject implements Sendable {
 
     @Override
     public void delete() throws IOException {
-        super.getDataStorage().deleteAll();
+        getDataStorage().getRootStorage().deleteStorage(getDataStorage());
         super.delete();
     }
 

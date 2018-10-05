@@ -12,7 +12,8 @@ public class Group extends PersistentObject implements Sendable {
     public String slugName;
     public String name;
     public School school;
-    public List<User> members;
+    private List<User> members = null;
+    private List<String> memberUsernames;
 
     public Group(DataStorage storage, DataReader dr) {
         super(storage);
@@ -22,11 +23,10 @@ public class Group extends PersistentObject implements Sendable {
         slugName = dr.readString();
         name = dr.readString();
         school = storage.getObject(School.class, dr.readString());
-        members = new LinkedList<>();
+        memberUsernames = new LinkedList<>();
         int c = dr.readInt();
         for (int i = 0; i < c; i++) {
-            String username = dr.readString();
-            members.add(Server.getInstance().miscStorage.getObject(User.class, username));
+            memberUsernames.add(dr.readString());
         }
     }
 
@@ -36,15 +36,30 @@ public class Group extends PersistentObject implements Sendable {
         slugName = createSlug(groupName);
         name = groupName;
         members = new LinkedList<>();
+        memberUsernames = new LinkedList<>();
         this.save();
+    }
+
+    public List<User> getMembers() {
+        if (members != null) {
+            return members;
+        } else {
+            members = new LinkedList<>();
+            for(String username: memberUsernames) {
+                members.add(Server.getInstance().miscStorage.getObject(User.class, username));
+            }
+            return members;
+        }
     }
 
     private static String createSlug(String schoolName) {
         return schoolName.replace(' ', '_').toLowerCase();
     }
 
-    public void addUser(User user) {
+    public void addUser(User user) throws IOException {
         members.add(user);
+        memberUsernames.add(user.username);
+        this.save();
     }
 
     @Override

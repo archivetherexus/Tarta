@@ -24,4 +24,10 @@ public class RootStorage {
             return storage;
         }
     }
+
+    public void deleteStorage(DataStorage storage) {
+        storage.handleDelete();
+        // TODO: Lookup by index instead. Note that we can't trust the storage name! Might be an unnecessary optimization.
+        storages.values().remove(storage);
+    }
 }

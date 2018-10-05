@@ -25,4 +25,8 @@ public class Session {
     public static Session continueSession(String sessionID) {
         return sessions.get(sessionID);
     }
+
+    public static void stopAllSessions() {
+        sessions.clear();
+    }
 }

@@ -13,7 +13,7 @@ public abstract class PersistentObject {
 
     public void delete() throws IOException {
         owner.remove(this.getClass(), this);
-        owner.update(this.getClass());
+        owner.handleUpdate(this.getClass());
     }
 
     public final DataStorage getDataStorage() {
@@ -21,8 +21,8 @@ public abstract class PersistentObject {
     }
 
     public final void save() throws IOException {
-        if (!owner.insertObject(this)) {
-            owner.update(this.getClass());
+        if (!owner.handleInsertObject(this)) {
+            owner.handleUpdate(this.getClass());
         }
     }
 }

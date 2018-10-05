@@ -1,10 +1,7 @@
 package se.fikaware.tarta.pages;
 
 import io.undertow.server.HttpServerExchange;
-import se.fikaware.tarta.models.Course;
-import se.fikaware.tarta.models.Group;
-import se.fikaware.tarta.models.School;
-import se.fikaware.tarta.models.User;
+import se.fikaware.tarta.models.*;
 import se.fikaware.web.BadRequest;
 import se.fikaware.web.Response;
 import se.fikaware.web.SendableIterator;
@@ -84,16 +81,21 @@ public class AdminPage {
     }
 
     public static void reset(User user, HttpServerExchange exchange) throws IOException {
-        /*var all = new Document();
-        Post.postCollection.deleteMany(all);
-        School.schoolCollection.deleteMany(all);
-        User.userCollection.deleteMany(all);
-        Group.groupCollection.deleteMany(all);*/
+        for(School school: Server.getInstance().miscStorage.getAll(School.class)) {
+            school.schoolStorage.getRootStorage().deleteStorage(school.schoolStorage);
+        }
+
+        Server.getInstance().miscStorage.remove();
 
         var school = new School("Test School");
-        var a = new User(school, "adminAC", "a");
+
+        var a = new User(school, "a", "a");
+        a.schools.add(school);
         a.isAdmin = true;
         a.save();
+        school.group.addUser(a);
+
+        Session.stopAllSessions();
 
         Response.ok(exchange);
     }
