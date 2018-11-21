@@ -2,8 +2,8 @@ import { Component } from 'inferno';
 import { connect } from 'inferno-redux';
 import { Link } from 'inferno-router';
 import { fetchHTTP } from '../../helpers/fetch_http';
-import Tabs from '../tabs/Tabs';
-import Tab from '../tabs/Tab';
+import Tabs from '../layout/Tabs';
+import Tab from '../layout/Tab';
 
 class Admin extends Component<{
     i18n: (i: string) => string;

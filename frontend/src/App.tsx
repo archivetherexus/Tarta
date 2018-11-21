@@ -23,6 +23,7 @@ import PrivacyPolicyPage from './components/pages/PrivacyPolicyPage';
 import AboutUsPage from './components/pages/AboutUsPage';
 import AdminSchoolPage from './components/pages/admin/AdminSchoolPage';
 import ResetPage from './components/pages/ResetPage';
+import InformationPage from './components/pages/InformationPage';
 
 function renderSubpage(component: any, props: any = {}) {
     return () => (
@@ -45,6 +46,7 @@ render(
                 <Route exact path="/admin" render={renderSubpage(AdminPage)} />
                 <Route path="/admin/school/:slugName" render={renderSubpage(AdminSchoolPage)} />
                 <Route path="/settings" render={renderSubpage(SettingsPage)} />
+                <Route path="/information" render={renderSubpage(InformationPage)} />
                 <Route path="/create" render={renderSubpage(CreatePostPage)} />
                 <Route path="/privacy_policy" render={renderSubpage(PrivacyPolicyPage)} />
                 <Route path="/about_us" render={renderSubpage(AboutUsPage)} />
